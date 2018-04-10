@@ -1,0 +1,14 @@
+{% load render_bundle from webpack_loader %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Species Potential Habitat Tool</title>
+    {% render_bundle 'main' 'css' %}
+</head>
+<body>
+    <div id="app"></div>
+    {% render_bundle 'main' 'js' %}
+</body>
+</html>

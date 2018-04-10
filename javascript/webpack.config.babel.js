@@ -1,12 +1,21 @@
 import path from 'path'
+import BundleTracker from 'webpack-bundle-tracker'
 
 export default {
     context: __dirname,
-    entry: './src/index',
+    entry: [
+        'webpack-dev-server/client?http://localhost:3000',
+        'webpack/hot/only-dev-server',
+        './src/index'
+    ],
     output: {
-        path: path.resolve(__dirname, 'dist'),
-        filename: '[name].bundle.js'
+        path: path.resolve(__dirname, 'webpack_bundles'),
+        filename: '[name].bundle.js',
+        publicPath: 'http://localhost:3000/assets/bundles/'
     },
+    plugins: [
+        new BundleTracker({filename: '../webpack-stats.json'})
+    ],
     devServer: {
         contentBase: './',
         hot: true,
@@ -23,6 +32,14 @@ export default {
                 include: path.resolve('./src'),
                 loader: 'babel-loader',
                 query: {presets: ['es2015', 'react']}
+            },
+            {
+                test: /\.scss$/,
+                use: [
+                    {loader: 'style-loader'},
+                    {loader: 'css-loader'},
+                    {loader: 'sass-loader'}
+                ]
             }
         ]
     },

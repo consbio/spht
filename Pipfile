@@ -15,6 +15,7 @@ django = "==1.11"
 gdal = "==2.2.4"
 numpy = "*"
 ncdjango = "*"
+django-webpack-loader = "*"
 
 
 [requires]
