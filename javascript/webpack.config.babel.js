@@ -11,7 +11,8 @@ export default {
     output: {
         path: path.resolve(__dirname, 'webpack_bundles'),
         filename: '[name].bundle.js',
-        publicPath: 'http://localhost:3000/assets/bundles/'
+        publicPath: 'http://localhost:3000/assets/bundles/',
+        crossOriginLoading: 'anonymous'
     },
     plugins: [
         new BundleTracker({filename: '../webpack-stats.json'})
@@ -22,8 +23,9 @@ export default {
         host: '127.0.0.1',
         port: 3000,
         inline: true,
-        publicPath: '/webpak/',
-        stats: ['minimal', 'color']
+        publicPath: '/assets/bundles/',
+        stats: ['minimal', 'color'],
+        headers: { "Access-Control-Allow-Origin": "*" }
     },
     module: {
         rules: [
