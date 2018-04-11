@@ -1,1 +1,17 @@
+@import "~bulma/sass/utilities/initial-variables";
+
+$primary: $blue;
+
+
 @import '~bulma/bulma';
+
+
+.navbar {
+  position: fixed;
+  width: 100%;
+  z-index: 5;
+}
+
+.navbar.is-dark a:hover {
+  color: $light;
+}

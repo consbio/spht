@@ -1,3 +1,3 @@
 import { createStore, combineReducers } from 'redux'
 
-export default createStore(combineReducers())
+export default createStore(state => state)
