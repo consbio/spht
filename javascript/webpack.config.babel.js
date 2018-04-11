@@ -1,12 +1,14 @@
 import path from 'path'
 import BundleTracker from 'webpack-bundle-tracker'
+import ExtractTextPlugin from 'extract-text-webpack-plugin'
 
 export default {
     context: __dirname,
     entry: [
         'webpack-dev-server/client?http://localhost:3000',
         'webpack/hot/only-dev-server',
-        './src/index'
+        './src/index',
+        './scss/spht.scss'
     ],
     output: {
         path: path.resolve(__dirname, 'webpack_bundles'),
@@ -15,6 +17,7 @@ export default {
         crossOriginLoading: 'anonymous'
     },
     plugins: [
+        new ExtractTextPlugin({filename: '[name].bundle.css'}),
         new BundleTracker({filename: '../webpack-stats.json'})
     ],
     devServer: {
@@ -37,17 +40,16 @@ export default {
             },
             {
                 test: /\.scss$/,
-                use: [
-                    {loader: 'style-loader'},
-                    {loader: 'css-loader'},
-                    {loader: 'sass-loader'}
-                ]
+                use: ExtractTextPlugin.extract({
+                    fallback: 'style-loader',
+                    use: ['css-loader', 'sass-loader']
+                })
+
             }
         ]
     },
     resolve: {
         modules: ['node_modules', './src'],
         extensions: ['.js']
-    },
-    mode: 'development'
+    }
 }
