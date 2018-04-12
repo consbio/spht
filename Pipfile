@@ -1,23 +1,17 @@
 [[source]]
-
 name = "pypi"
 url = "https://pypi.python.org/simple"
 verify_ssl = true
 
-
 [dev-packages]
 
-
-
 [packages]
-
-django = "==1.11"
-gdal = "==2.2.4"
+Django = "==1.11"
+GDAL = "==2.2.4"
 numpy = "*"
 ncdjango = "*"
 django-webpack-loader = "*"
-
+"psycopg2-binary" = "*"
 
 [requires]
-
 python_version = "3.6"

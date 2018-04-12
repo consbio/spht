@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
+    'ncdjango',
     'webpack_loader',
 
     'spht'
@@ -79,8 +80,11 @@ WSGI_APPLICATION = 'spht_project.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'spht_db',
+        'USER': 'spht',
+        'PASSWORD': 'sphtx',
+        'HOST': '127.0.0.1',
     }
 }
 
@@ -126,3 +130,5 @@ STATIC_URL = '/static/'
 STATICFILES_DIRS = (
     os.path.join(BASE_DIR, 'javascript'),
 )
+
+NC_SERVICE_DATA_ROOT = '/Users/ken/SPHT/Data'

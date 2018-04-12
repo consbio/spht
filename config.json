@@ -1,0 +1,7 @@
+{
+  "django_secret_key": "abcdefghijklmnop",
+  "db_name": "spht_db",
+  "db_user": "spht",
+  "db_password": "sphtx"
+}
+
