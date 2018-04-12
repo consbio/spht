@@ -44,7 +44,10 @@ export default {
                     fallback: 'style-loader',
                     use: ['css-loader', 'sass-loader']
                 })
-
+            },
+            {
+                test: /\.png$/,
+                loader: 'url-loader'
             }
         ]
     },
