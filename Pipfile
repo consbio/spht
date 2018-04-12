@@ -6,7 +6,7 @@ verify_ssl = true
 [dev-packages]
 
 [packages]
-Django = "==1.11"
+Django = "==1.11.12"
 GDAL = "==2.2.4"
 numpy = "*"
 ncdjango = "*"
