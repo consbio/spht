@@ -1,10 +1,18 @@
 @import "~bulma/sass/utilities/initial-variables";
-
-$primary: $blue;
-
-
 @import '~bulma/bulma';
 
+$primary: $blue;
+$sidebar-width: 440px;
+$header-height: 52px;
+$tab-header-height: 58px;
+$tab-content-height: calc(100vh - #{$header-height} - #{$tab-header-height});
+
+.spht-app > .columns {
+  position: absolute;
+  margin-top: $header-height;
+  height: calc(100% - #{$header-height});
+  width: 100%;
+}
 
 .navbar {
   position: fixed;
@@ -13,5 +21,44 @@ $primary: $blue;
 }
 
 .navbar.is-dark a:hover {
-  color: $light;
+  color: $orange;
+}
+
+.sidebar {
+  box-shadow: 2px 0px 10px;
+  z-index: 2; // Raise box shadow above leaflet map
+}
+
+@include mobile {
+  .sidebar {
+    width: 100%;
+    position: absolute;
+    box-shadow: none;
+    background-color: #fff;
+  }
+}
+
+.sidebar-inner {
+  width: $sidebar-width;
+}
+
+@include mobile {
+  .sidebar-inner {
+    width: 100%;
+  }
+}
+
+.sidebar .tab-content {
+  position: relative;
+  height: $tab-content-height;
+  overflow: auto;
+  padding: 0px 15px 0px 15px;
+}
+
+@include mobile {
+  .sidebar .tab-content {
+    margin-top: $tab-header-height;
+    height: auto !important;
+    min-height: $tab-content-height;
+  }
 }

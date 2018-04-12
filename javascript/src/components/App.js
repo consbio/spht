@@ -4,7 +4,7 @@ import Navbar from './Navbar'
 import Sidebar from './Sidebar'
 
 const App = () => (
-    <div className="seedsource-app">
+    <div className="spht-app">
         <Navbar />
 
         <div className="columns is-gapless">
