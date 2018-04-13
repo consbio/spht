@@ -1,7 +1,17 @@
 import React from 'react'
+import { connect } from 'react-redux'
+import { setMapPoint } from '../actions/map'
 import { Lethargy } from 'lethargy'
 import L from 'leaflet'
 import 'leaflet-basemaps'
+
+/* This is a workaround for a webpack-leaflet incompatibility (https://github.com/PaulLeCam/react-leaflet/issues/255)w */
+delete L.Icon.Default.prototype._getIconUrl;
+L.Icon.Default.mergeOptions({
+  iconRetinaUrl: require('leaflet/dist/images/marker-icon-2x.png'),
+  iconUrl: require('leaflet/dist/images/marker-icon.png'),
+  shadowUrl: require('leaflet/dist/images/marker-shadow.png'),
+});
 
 class Map extends React.Component {
     constructor(props) {
@@ -9,6 +19,8 @@ class Map extends React.Component {
 
         this.mapNode = null
         this.map = null
+
+        this.pointMarker = null
     }
 
     componentDidMount() {
@@ -75,13 +87,63 @@ class Map extends React.Component {
             position: 'bottomleft'
         })
         this.map.addControl(basemapControl)
+
+        this.map.on('click', e => {
+            if (!e.latlng) {
+                return
+            }
+
+            let { lng, lat } = e.latlng
+            this.props.onSetPoint(lng, lat)
+        })
+    }
+
+    updatePoint(point) {
+        let pointIsValid = point !== null && point.x && point.y
+
+        if (pointIsValid) {
+            if (this.pointMarker === null) {
+                this.pointMarker = L.marker([point.y, point.x]).addTo(this.map)
+            }
+            else {
+                this.pointMarker.setLatLng([point.y, point.x])
+            }
+        }
+        else if (this.pointMarker !== null) {
+            this.map.removeLayer(this.pointMarker)
+            this.pointMarker = null
+        }
+    }
+
+    updateState() {
+        let { point } = this.props
+
+        this.updatePoint(point)
     }
 
     render() {
+        this.updateState()
+
         return <div className="map-container">
             <div ref={input => {this.mapNode = input}} className="map-container"></div>
         </div>
     }
 }
 
-export default Map
+const mapStateToProps = ({ map }) => {
+    let { point } = map
+
+    return {
+        point
+    }
+}
+
+const mapDispatchToProps = dispatch => {
+    return {
+        onSetPoint: (x, y) => {
+            dispatch(setMapPoint(x, y))
+        }
+    }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(Map)

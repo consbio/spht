@@ -47,7 +47,7 @@ export default {
             },
             {
                 test: /\.png$/,
-                loader: 'url-loader'
+                loader: 'file-loader'
             }
         ]
     },

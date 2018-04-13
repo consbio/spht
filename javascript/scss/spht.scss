@@ -7,6 +7,8 @@ $tab-header-height: 58px;
 $tab-content-height: calc(100vh - #{$header-height} - #{$tab-header-height});
 
 @import '~bulma/bulma';
+@import '~leaflet/dist/leaflet.css';
+@import '~leaflet-basemaps/L.Control.Basemaps.css';
 
 .spht-app > .columns {
   position: absolute;
@@ -14,12 +16,6 @@ $tab-content-height: calc(100vh - #{$header-height} - #{$tab-header-height});
   height: calc(100% - #{$header-height});
   width: 100%;
 }
-
-@import '~bulma/bulma';
-@import '~leaflet/dist/leaflet.css';
-@import '~leaflet-basemaps/L.Control.Basemaps.css';
-
-
 
 .navbar {
   position: fixed;
@@ -68,11 +64,6 @@ $tab-content-height: calc(100vh - #{$header-height} - #{$tab-header-height});
     height: auto !important;
     min-height: $tab-content-height;
   }
-}
-
-.seedsource-app > .columns {
-  position: relative;
-  top: $header-height;
 }
 
 .column.map {
