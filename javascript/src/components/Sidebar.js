@@ -1,11 +1,10 @@
 import React, { Component } from 'react';
-import About from './About'
 import Tool from './Tool'
 
 class Sidebar extends Component {
     constructor(props) {
         super(props);
-        this.state = {activeTab: "about"}
+        this.state = {activeTab: "tool"}
     }
     render() {
         let activeTab = this.state.activeTab
@@ -13,22 +12,18 @@ class Sidebar extends Component {
             <div className="sidebar-inner">
                 <div className="tabs is-boxed is-fullwidth">
                     <ul>
-                        <li className={activeTab === 'about' ? 'is-active' : null}>
-                            <a onClick={(e) => this.setState({activeTab: "about"})}>About</a>
-                        </li>
-                        <li className={activeTab === 'tool' ? 'is-active' : null}>
+                        <li className={(activeTab === 'tool' ? 'is-active' : null) + ' is-hidden-tablet'}>
                             <a onClick={(e) => this.setState({activeTab: "tool"})}>Tool</a>
+                        </li>
+                        <li className={(activeTab === 'map' ? 'is-active' : null) + ' is-hidden-tablet'}>
+                            <a onClick={(e) => this.setState({activeTab: "map"})}>Map</a>
                         </li>
                     </ul>
                 </div>
-                <div className={'tab-content ' + (activeTab !== 'about' ? 'is-hidden' : '')}>
-                    <About />
-                </div>
-                <div className={'tab-content ' + (activeTab !== 'tool' ? 'is-hidden' : '')}>
+                <div className={'tab-content ' + (activeTab === 'map' ? 'is-hidden-mobile' : '')}>
                     <Tool />
                 </div>
             </div>
-
         )
     }
 }

@@ -13,7 +13,7 @@ L.Icon.Default.mergeOptions({
   shadowUrl: require('leaflet/dist/images/marker-shadow.png'),
 });
 
-class Map extends React.Component {
+    class Map extends React.Component {
     constructor(props) {
         super(props)
 
