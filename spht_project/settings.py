@@ -25,7 +25,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # See https://docs.djangoproject.com/en/1.11/howto/deployment/checklist/
 
 CONFIG = {}
-config_file = os.environ.get('SEEDSOURCE_CONF_FILE') or os.path.join(BASE_DIR, 'config.json')
+config_file = os.environ.get('SPHT_CONF_FILE') or os.path.join(BASE_DIR, 'config.json')
 if config_file and os.path.isfile(config_file):
     with open(config_file) as f:
         CONFIG = json.loads(f.read())
@@ -35,11 +35,6 @@ SECRET_KEY = CONFIG.get(
         'django_secret_key', ''.join(
                 [random.SystemRandom().choice(string.ascii_letters + string.digits) for _ in range(50)]
         ))  # This results in a random secret key every time the settings are loaded. Not appropriate for production.
-
-
-
-# SECURITY WARNING: keep the secret key used in production secret!
-# SECRET_KEY = '$-m71$xof^r-ug^-*e+pushxtjeicqcwz$1v#zrg(z=&nwlqyd'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -150,7 +145,7 @@ STATICFILES_DIRS = (
     os.path.join(BASE_DIR, 'javascript'),
 )
 
-NC_SERVICE_DATA_ROOT = '/Users/ken/SPHT/Data'
+NC_SERVICE_DATA_ROOT = CONFIG.get('data_root')
 
 NC_INSTALLED_INTERFACES = (
     'ncdjango.interfaces.data',
