@@ -5,7 +5,7 @@ import { setSpecies } from "../actions/configuration"
 
 class SpeciesStep extends Component {
     render() {
-        let activeTab = this.props.species
+        let activeTab = this.props.configuration.species
         return(
         <div>
             <h4 className="subtitle is-5"><span className="tag is-medium is-rounded">1</span> Select a Species</h4>
