@@ -7,7 +7,7 @@ class DistributionStep extends Component {
     render() {
         return(
             <div>
-                <h4 className="title is-6">2. Select Species Distribution Record</h4>
+                <h4 className="subtitle is-5"><span className="tag is-medium is-rounded">2</span> Select Species Distribution Record</h4>
                 <div className="select">
                     <select
                         value={this.props.configuration.distribution}
@@ -16,6 +16,7 @@ class DistributionStep extends Component {
                         <option value="1981_2010">1981 - 2010</option>
                     </select>
                 </div>
+                <div>&nbsp;</div>
                 <div>&nbsp;</div>
             </div>
 

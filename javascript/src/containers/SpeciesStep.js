@@ -8,8 +8,8 @@ class SpeciesStep extends Component {
         let activeTab = this.props.species
         return(
         <div>
-            <h4 className="title is-6">1. Select a Species</h4>
-            <div className="tabs is-toggle is-small"
+            <h4 className="subtitle is-5"><span className="tag is-medium is-rounded">1</span> Select a Species</h4>
+            <div className="tabs is-toggle"
                  onClick={(e) => this.props.setSpecies(e.target.text)}
             >
                 <ul>
