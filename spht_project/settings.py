@@ -1,3 +1,4 @@
+
 """
 Django settings for spht project.
 
@@ -11,6 +12,10 @@ https://docs.djangoproject.com/en/1.11/ref/settings/
 """
 
 import os
+import json
+
+import random
+import string
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -19,8 +24,22 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.11/howto/deployment/checklist/
 
+CONFIG = {}
+config_file = os.environ.get('SEEDSOURCE_CONF_FILE') or os.path.join(BASE_DIR, 'config.json')
+if config_file and os.path.isfile(config_file):
+    with open(config_file) as f:
+        CONFIG = json.loads(f.read())
+
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = '$-m71$xof^r-ug^-*e+pushxtjeicqcwz$1v#zrg(z=&nwlqyd'
+SECRET_KEY = CONFIG.get(
+        'django_secret_key', ''.join(
+                [random.SystemRandom().choice(string.ascii_letters + string.digits) for _ in range(50)]
+        ))  # This results in a random secret key every time the settings are loaded. Not appropriate for production.
+
+
+
+# SECURITY WARNING: keep the secret key used in production secret!
+# SECRET_KEY = '$-m71$xof^r-ug^-*e+pushxtjeicqcwz$1v#zrg(z=&nwlqyd'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -81,10 +100,10 @@ WSGI_APPLICATION = 'spht_project.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'spht_db',
-        'USER': 'spht',
-        'PASSWORD': 'sphtx',
-        'HOST': '127.0.0.1',
+        'NAME': CONFIG.get('db_name', 'seedsource'),
+        'USER': CONFIG.get('db_user', 'seedsource'),
+        'PASSWORD': CONFIG.get('db_password'),
+        'HOST': CONFIG.get('db_host', '127.0.0.1')
     }
 }
 
@@ -132,3 +151,10 @@ STATICFILES_DIRS = (
 )
 
 NC_SERVICE_DATA_ROOT = '/Users/ken/SPHT/Data'
+
+NC_INSTALLED_INTERFACES = (
+    'ncdjango.interfaces.data',
+    'ncdjango.interfaces.arcgis_extended',
+    'ncdjango.interfaces.arcgis',
+    'interfaces.tiles'
+)

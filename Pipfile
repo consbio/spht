@@ -12,6 +12,7 @@ numpy = "*"
 ncdjango = "*"
 django-webpack-loader = "*"
 "psycopg2-binary" = "*"
+mercantile = "*"
 
 [requires]
 python_version = "3.6"
