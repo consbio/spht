@@ -1,8 +1,8 @@
 import { createStore, combineReducers } from 'redux'
 import map from './map'
-import { currentSpecies } from './runConfiguration'
+import configuration from './runConfiguration'
 
 export default createStore(combineReducers({
     map,
-    species: currentSpecies
+    configuration
 }))

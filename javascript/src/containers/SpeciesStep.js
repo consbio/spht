@@ -4,37 +4,31 @@ import { bindActionCreators } from 'redux';
 import { setSpecies } from "../actions/configuration"
 
 class SpeciesStep extends Component {
-    constructor (props) {
-        super(props)
-        this.onInputChange = this.onInputChange.bind(this)
-    }
-
-    onInputChange(e) {
-        this.props.setSpecies({ species: e.target.text })
-    }
-
     render() {
+        let activeTab = this.props.species
         return(
         <div>
             <h4 className="title is-6">1. Select a Species</h4>
-            <div className="tabs is-toggle is-small">
+            <div className="tabs is-toggle is-small"
+                 onClick={(e) => this.props.setSpecies(e.target.text)}
+            >
                 <ul>
-                    <li onClick={this.onInputChange}><a>Gorilla</a></li>
-                    <li onClick={this.onInputChange}><a>Bananas</a></li>
+                    <li className={activeTab === 'Gorilla' ? 'is-active' : null}><a>Gorilla</a></li>
+                    <li className={activeTab === 'Bananas' ? 'is-active' : null}><a>Bananas</a></li>
                 </ul>
             </div>
-            <p>{this.props.species.species}</p>
+            <div>&nbsp;</div>
         </div>
         )
     }
 }
 
 function mapDispatchToProps(dispatch) {
-  return bindActionCreators({ setSpecies }, dispatch);
+    return bindActionCreators({ setSpecies }, dispatch);
 }
 
-function mapStateToProps({ species }) {
-    return { species }
+function mapStateToProps(state) {
+    return state
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(SpeciesStep);

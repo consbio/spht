@@ -4,3 +4,17 @@ export function setSpecies(input) {
         species: input
     }
 }
+
+export function setDistribution(input) {
+    return {
+        type: 'SELECT_DISTRIBUTION',
+        distribution: input
+    }
+}
+
+export function setModel(input) {
+    return {
+        type: 'SELECT_MODEL',
+        model: input
+    }
+}

@@ -1,20 +1,35 @@
 import React, { Component } from 'react';
-
+import { connect } from 'react-redux'
+import { bindActionCreators } from 'redux';
+import { setDistribution } from "../actions/configuration"
 
 class DistributionStep extends Component {
-    constructor (props) {
-        super(props)
-    }
-
     render() {
         return(
             <div>
                 <h4 className="title is-6">2. Select Species Distribution Record</h4>
-                <p>You can select current or historic species distributions.</p>
+                <div className="select">
+                    <select
+                        value={this.props.configuration.distribution}
+                        onChange={(e) => this.props.setDistribution(e.target.value)}>
+                        <option value="1961_1990">1961 - 1990</option>
+                        <option value="1981_2010">1981 - 2010</option>
+                    </select>
+                </div>
+                <div>&nbsp;</div>
             </div>
+
         )
     }
 }
 
 
-export default DistributionStep;
+function mapDispatchToProps(dispatch) {
+    return bindActionCreators({ setDistribution }, dispatch)
+}
+
+function mapStateToProps(state) {
+    return state
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(DistributionStep);
