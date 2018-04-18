@@ -22,9 +22,30 @@ class Command(BaseCommand):
         data_file = options['data_file']
         variable_name = options['variable_name']
 
-        shutil.copy(data_file, SERVICE_DATA_ROOT)
+        if not os.path.isdir(SERVICE_DATA_ROOT):
+            raise CommandError('Directory %s does not exist.' % SERVICE_DATA_ROOT)
+
+        # Check for existence of file or service. There's a possible race
+        # condition here, but this is a management command, not a user command.
+        file_exists = False
+        svc_exists = False
+
+        target = os.path.join(SERVICE_DATA_ROOT, os.path.basename(data_file))
+        if os.path.exists(target):
+            self.stderr.write('File %s already exists.\n' % target)
+            file_exists = True
 
         svc_name = os.path.basename(data_file).split('.')[0]
+        try:
+            svc = Service.objects.get(name=svc_name)
+            self.stderr.write('Service %s already exists.\n' % svc_name)
+            svc_exists = True
+        except Service.DoesNotExist:
+            pass
+
+        if file_exists or svc_exists:
+            raise CommandError('No changes made.')
+
         desc = clover.netcdf.describe.describe(data_file)
         grid = desc['variables'][variable_name]['spatial_grid']
         extent = grid['extent']
@@ -53,6 +74,7 @@ class Command(BaseCommand):
             'supports_time': 0
             }
 
+        shutil.copy(data_file, SERVICE_DATA_ROOT)
         with transaction.atomic():
             service_data['data_path'] = os.path.basename(data_file)
             variable_data['service'] = Service.objects.create(**service_data)
