@@ -6,18 +6,19 @@ import { setDistribution } from "../actions/configuration"
 class DistributionStep extends Component {
     render() {
         return(
-            <div>
-                <h4 className="subtitle is-5"><span className="tag is-medium is-rounded">2</span> Select Species Distribution Record</h4>
-                <div className="select">
-                    <select
-                        value={this.props.configuration.distribution}
-                        onChange={(e) => this.props.setDistribution(e.target.value)}>
-                        <option value="1961_1990">1961 - 1990</option>
-                        <option value="1981_2010">1981 - 2010</option>
-                    </select>
+            <div className="configuration-step">
+                <h4 className="title is-5"><span className="badge">2</span> Select Species Distribution Record</h4>
+                <div className="step-content">
+                    <div className="select">
+                        <select
+                            value={this.props.configuration.distribution}
+                            onChange={(e) => this.props.setDistribution(e.target.value)}>
+                            <option value="1961_1990">1961 - 1990</option>
+                            <option value="1981_2010">1981 - 2010</option>
+                        </select>
+                    </div>
+                    <div>&nbsp;</div>
                 </div>
-                <div>&nbsp;</div>
-                <div>&nbsp;</div>
             </div>
 
         )

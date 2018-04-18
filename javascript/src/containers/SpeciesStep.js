@@ -5,17 +5,23 @@ import { setSpecies } from "../actions/configuration"
 
 class SpeciesStep extends Component {
     render() {
-        let activeTab = this.props.configuration.species
         return(
-        <div>
-            <h4 className="subtitle is-5"><span className="tag is-medium is-rounded">1</span> Select a Species</h4>
-            <div className="tabs is-toggle"
-                 onClick={(e) => this.props.setSpecies(e.target.text)}
-            >
-                <ul>
-                    <li className={activeTab === 'Gorilla' ? 'is-active' : null}><a>Gorilla</a></li>
-                    <li className={activeTab === 'Bananas' ? 'is-active' : null}><a>Bananas</a></li>
-                </ul>
+        <div className="configuration-step">
+            <h4 className="title is-5"><span className="badge">1</span> Select Species</h4>
+            <div className="step-content">
+                <div className="select">
+                    <select
+                        value={this.props.configuration.species}
+                        onChange={(e) => this.props.setSpecies(e.target.value)}
+                    >
+                        <option value="none">Select</option>
+                        <option value="lodgepole_pine">Lodgepole Pine</option>
+                        <option value="douglas-fir">Douglas-fir</option>
+                        <option value="sitka_spruce">Sitka Spruce</option>
+                        <option value="ponderosa_pine">Ponderosa Pine</option>
+                        <option value="engelmann_spruce">Engelmann Spruce</option>
+                    </select>
+                </div>
             </div>
             <div>&nbsp;</div>
         </div>

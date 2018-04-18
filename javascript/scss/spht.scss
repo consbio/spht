@@ -5,6 +5,7 @@ $sidebar-width: 440px;
 $header-height: 52px;
 $tab-header-height: 58px;
 $tab-content-height: calc(100vh - #{$header-height} - #{$tab-header-height});
+$family-strong: "Arial Black", "Arial Bold", Gadget, sans-serif;
 
 @import '~bulma/bulma';
 @import '~leaflet/dist/leaflet.css';
@@ -55,7 +56,7 @@ $tab-content-height: calc(100vh - #{$header-height} - #{$tab-header-height});
   position: relative;
   height: $tab-content-height;
   overflow: auto;
-  padding: 0px 15px 0px 15px;
+  padding: 0 1.5em;
 }
 
 @include mobile {
@@ -77,14 +78,6 @@ $tab-content-height: calc(100vh - #{$header-height} - #{$tab-header-height});
   z-index: 1;
 }
 
-.tool p {
-  margin-bottom: 15px;
-}
-
-.tool {
-  padding: 0 1em;
-}
-
 .modeling-table {
   position: relative;
   left: -1.5em;
@@ -92,5 +85,28 @@ $tab-content-height: calc(100vh - #{$header-height} - #{$tab-header-height});
 
 td {
   text-align: center !important;
+}
+
+em {
+  font-size: .9em;
+}
+
+.badge {
+  border-radius: 10px;
+  padding: 3px 7px;
+  background-color: #777;
+  color: #fff;
+  font-weight: bold !important;
+  font-size: 0.75rem !important;
+  vertical-align: middle;
+  font-family: $family-strong;
+}
+.configuration-step .step-content {
+  margin: 10px 0px 0px 25px;
+}
+
+.configuration-step>h4 {
+  font-size: 1.25rem;
+  font-weight: bold;
 }
 

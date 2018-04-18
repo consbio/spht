@@ -21,6 +21,8 @@ L.Icon.Default.mergeOptions({
         this.map = null
 
         this.pointMarker = null
+
+        this.layers = []
     }
 
     componentDidMount() {
@@ -98,6 +100,7 @@ L.Icon.Default.mergeOptions({
         })
     }
 
+
     updatePoint(point) {
         let pointIsValid = point !== null && point.x && point.y
 
@@ -130,11 +133,13 @@ L.Icon.Default.mergeOptions({
     }
 }
 
-const mapStateToProps = ({ map }) => {
-    let { point } = map
+const mapStateToProps = (state) => {
+    let { point } = state.map
+    let runConfiguration = state.configuration
+    //todo: add array of the layers you want to show
 
     return {
-        point
+        point, runConfiguration
     }
 }
 
