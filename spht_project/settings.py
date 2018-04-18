@@ -95,8 +95,8 @@ WSGI_APPLICATION = 'spht_project.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': CONFIG.get('db_name', 'seedsource'),
-        'USER': CONFIG.get('db_user', 'seedsource'),
+        'NAME': CONFIG.get('db_name', 'spht'),
+        'USER': CONFIG.get('db_user', 'spht'),
         'PASSWORD': CONFIG.get('db_password'),
         'HOST': CONFIG.get('db_host', '127.0.0.1')
     }
@@ -145,7 +145,7 @@ STATICFILES_DIRS = (
     os.path.join(BASE_DIR, 'javascript'),
 )
 
-NC_SERVICE_DATA_ROOT = CONFIG.get('data_root')
+NC_SERVICE_DATA_ROOT = CONFIG.get('data_root', 'data/ncdjango/services')
 
 NC_INSTALLED_INTERFACES = (
     'ncdjango.interfaces.data',
