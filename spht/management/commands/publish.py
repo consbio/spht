@@ -51,7 +51,7 @@ class Command(BaseCommand):
                 extent = grid['extent']
                 proj = extent['proj4']
                 bbox = clover.geometry.bbox.BBox(
-                    [extent[c] for c in ['xmin', 'xmax', 'ymin', 'ymax']], pyproj.Proj(proj)
+                    [extent[c] for c in ['xmin', 'ymin', 'xmax', 'ymax']], pyproj.Proj(proj)
                 )
                 renderer = UniqueValuesRenderer([(1, Color(0, 0, 0, 255))], fill_value=0)
 
@@ -74,7 +74,7 @@ class Command(BaseCommand):
 
                     extent = grid['extent']
                     bbox = clover.geometry.bbox.BBox(
-                        [extent[c] for c in ['xmin', 'xmax', 'ymin', 'ymax']], pyproj.Proj(extent['proj4'])
+                        [extent[c] for c in ['xmin', 'ymin', 'xmax', 'ymax']], pyproj.Proj(extent['proj4'])
                     )
 
                     Variable.objects.create(
