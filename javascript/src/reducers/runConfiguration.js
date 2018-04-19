@@ -2,7 +2,7 @@ import { morph } from '../utils'
 
 const defaultConfiguration = {
     species: "none",
-    distribution: '1981_2010',
+    distribution: '1961_1990',
     model:  {   rcp45_2025: false,
                 rcp85_2025: false,
                 rcp45_2055: false,
