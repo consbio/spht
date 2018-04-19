@@ -4,6 +4,7 @@ import shutil
 import clover.netcdf.describe
 import pyproj
 from clover.render.renderers.stretched import StretchedRenderer
+from clover.render.renderers.unique import UniqueValuesRenderer
 from clover.utilities.color import Color
 from django.core.management.base import BaseCommand, CommandError
 from django.db import transaction
@@ -15,10 +16,11 @@ class Command(BaseCommand):
 
     def add_arguments(self, parser):
         parser.add_argument('data_files', nargs='+', type=str)
+        parser.add_argument('--overwrite', action='store_true', dest='overwrite')
 
-    def handle(self, *args, **options):
+    def handle(self, data_files, overwrite, *args, **options):
         with transaction.atomic():
-            for data_file in options['data_files']:
+            for data_file in data_files:
                 if not os.path.isdir(SERVICE_DATA_ROOT):
                     raise CommandError('Directory %s does not exist.' % SERVICE_DATA_ROOT)
 
@@ -29,15 +31,19 @@ class Command(BaseCommand):
 
                 target = os.path.join(SERVICE_DATA_ROOT, os.path.basename(data_file))
                 if os.path.exists(target):
-                    self.stderr.write('File %s already exists.\n' % target)
+                    if not overwrite:
+                        self.stderr.write('File %s already exists.\n' % target)
                     file_exists = True
 
                 svc_name = os.path.basename(data_file).split('.')[0]
                 if Service.objects.filter(name=svc_name).exists():
-                    self.stderro.write('Service %s already exists.\n' % svc_name)
-                    svc_exists = True
+                    if overwrite:
+                        Service.objects.filter(name=svc_name).delete()
+                    else:
+                        self.stderr.write('Service %s already exists.\n' % svc_name)
+                        svc_exists = True
 
-                if file_exists or svc_exists:
+                if (file_exists or svc_exists) and not overwrite:
                     raise CommandError('No changes made.')
 
                 desc = clover.netcdf.describe.describe(data_file)
@@ -47,8 +53,10 @@ class Command(BaseCommand):
                 bbox = clover.geometry.bbox.BBox(
                     [extent[c] for c in ['xmin', 'xmax', 'ymin', 'ymax']], pyproj.Proj(proj)
                 )
-                renderer = StretchedRenderer([(1, Color(0, 0, 0, 255)), (0, Color(255, 255, 255, 0))])
+                renderer = UniqueValuesRenderer([(1, Color(0, 0, 0, 255))], fill_value=0)
 
+                if file_exists:
+                    os.remove(os.path.join(SERVICE_DATA_ROOT, os.path.basename(data_file)))
                 shutil.copy(data_file, SERVICE_DATA_ROOT)
 
                 service = Service.objects.create(
