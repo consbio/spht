@@ -165,11 +165,7 @@ const mapStateToProps = (state) => {
     let createLayersToDisplay = (configuration) => {
         let layers = []
         let checkLayers = (c, latin) => {
-            if (c.distribution === '1961_1990') {
-                layers.push('/tiles/' + latin + '_p1961_1990_800m_pa/{z}/{x}/{y}.png')
-            } else {
-                layers.push('/tiles/' + latin + '_p1981_2010_800m_pa/{z}/{x}/{y}.png')
-            }
+            layers.push('/tiles/' + latin + '_p' + c.distribution + '_800m_pa/{z}/{x}/{y}.png')
             for (let rcp_year in c.model) {
                 if (c.model[rcp_year]) {
                     layers.push('/tiles/' + latin + '_15gcm_' + rcp_year + '_pa/{z}/{x}/{y}.png')
