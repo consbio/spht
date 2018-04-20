@@ -112,7 +112,6 @@ L.Icon.Default.mergeOptions({
         if (layersNeeded > 0) {
             let layersToAdd = this.layers.length + layersNeeded
             for (let i = this.layers.length; i < layersToAdd; i++) {
-                console.log("layersi", layers[i])
                 let layer = L.tileLayer(layers[i])
                 layer.addTo(this.map)
                 this.layers.push(layer)
@@ -124,10 +123,7 @@ L.Icon.Default.mergeOptions({
             }
         }
         this.updateLayerUrls(layers)
-
     }
-
-
 
     updatePoint(point) {
         let pointIsValid = point !== null && point.x && point.y
@@ -174,31 +170,11 @@ const mapStateToProps = (state) => {
             } else {
                 layers.push('/tiles/' + latin + '_p1981_2010_800m_pa/{z}/{x}/{y}.png')
             }
-            if (c.model.rcp45_2025) {
-                layers.push('/tiles/' + latin + '_15gcm_rcp45_2025_pa/{z}/{x}/{y}.png')
+            for (let rcp_year in c.model) {
+                if (c.model[rcp_year]) {
+                    layers.push('/tiles/' + latin + '_15gcm_' + rcp_year + '_pa/{z}/{x}/{y}.png')
+                }
             }
-            if (c.model.rcp45_2055) {
-                layers.push('/tiles/' + latin + '_15gcm_rcp45_2055_pa/{z}/{x}/{y}.png')
-            }
-            if (c.model.rcp45_2085) {
-                layers.push('/tiles/' + latin + '_15gcm_rcp45_2085_pa/{z}/{x}/{y}.png')
-            }
-            if (c.model.rcp85_2025) {
-                layers.push('/tiles/' + latin + '_15gcm_rcp85_2025_pa/{z}/{x}/{y}.png')
-            }
-            if (c.model.rcp85_2055) {
-                layers.push('/tiles/' + latin + '_15gcm_rcp85_2055_pa/{z}/{x}/{y}.png')
-            }
-            if (c.model.rcp85_2085) {
-                layers.push('/tiles/' + latin + '_15gcm_rcp85_2085_pa/{z}/{x}/{y}.png')
-            }
-
-        //    todo: refactor...
-        //    c.model.foreach
-        //   -or-
-        //    for (model in c.model) {
-        //     if (c.model[model]) {
-        //    layers.push('/tiles/' + latin + '_15gcm_rcp85_2025_pa/{z}/{x}/{y}.png'...
         }
 
         switch(configuration.species) {
