@@ -1,14 +1,14 @@
-import os.path
 import shutil
 
-import clover.netcdf.describe
+import os.path
 import pyproj
-from clover.render.renderers.stretched import StretchedRenderer
-from clover.render.renderers.unique import UniqueValuesRenderer
-from clover.utilities.color import Color
 from django.core.management.base import BaseCommand, CommandError
 from django.db import transaction
 from ncdjango.models import Service, Variable, SERVICE_DATA_ROOT
+from trefoil.geometry.bbox import BBox
+from trefoil.netcdf.describe import describe
+from trefoil.render.renderers.unique import UniqueValuesRenderer
+from trefoil.utilities.color import Color
 
 
 class Command(BaseCommand):
@@ -46,11 +46,11 @@ class Command(BaseCommand):
                 if (file_exists or svc_exists) and not overwrite:
                     raise CommandError('No changes made.')
 
-                desc = clover.netcdf.describe.describe(data_file)
+                desc = describe(data_file)
                 grid = next(v['spatial_grid'] for k, v in desc['variables'].items() if v.get('spatial_grid'))
                 extent = grid['extent']
                 proj = extent['proj4']
-                bbox = clover.geometry.bbox.BBox(
+                bbox = BBox(
                     [extent[c] for c in ['xmin', 'ymin', 'xmax', 'ymax']], pyproj.Proj(proj)
                 )
                 renderer = UniqueValuesRenderer([(1, Color(0, 0, 0, 255))], fill_value=0)
@@ -73,7 +73,7 @@ class Command(BaseCommand):
                         continue
 
                     extent = grid['extent']
-                    bbox = clover.geometry.bbox.BBox(
+                    bbox = BBox(
                         [extent[c] for c in ['xmin', 'ymin', 'xmax', 'ymax']], pyproj.Proj(extent['proj4'])
                     )
 
