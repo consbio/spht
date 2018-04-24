@@ -21,12 +21,11 @@ L.Icon.Default.mergeOptions({
         this.map = null
 
         this.pointMarker = null
-        this.layers = null
+        this.layers = []
+        this.compositeLayer = null
     }
 
     componentDidMount() {
-        this.layers = this.props.layersToDisplay
-
         let lethargy = new Lethargy(7, 10, 0.05)  // Help minimize jumpy zoom with Apple mice and trackpads
         L.Map.ScrollWheelZoom.prototype._onWheelScroll = function(e) {
             L.DomEvent.stop(e)
@@ -101,62 +100,43 @@ L.Icon.Default.mergeOptions({
         })
     }
 
+    updateLayerUrls(layers) {
+        layers.forEach((layer, i) => {
+            this.layers[i].setUrl(layer)
+        })
+    }
 
-    // Is it better to modify layers (by changing all of their url's) or to search for particular layers that have been
-    // added/deleted and add/delete new ones? Psuedo-code of the latter is below:
+    updateMapLayers(layers) {
+        let layersNeeded = layers.length - this.layers.length
 
-    addLayersToMap(layers) {
-        let numberOfLayersToApply = layers.length()
-        let numberOfLayersCurrently = 0
-        this.map.eachLayer(() => { numberOfLayersCurrently ++ })
-
-        if (numberOfLayersToApply > numberOfLayersCurrently) {
-            layers.each((layer, z, y, x) => {
-                let layerAsObject = L.tileLayer(layer, z, y, x)
-                if (!this.map.hasLayer(layerAsObject)) {
-                    layerAsObject.addTo(this.map)
-                }
-            })
-        } else if (numberOfLayersToApply < numberOfLayersCurrently) {
-            this.map.eachLayer((layerOnMap) => {
-                if (layers.includes(layerOnMap.url)) {
-                    this.map.removeLayer(layerOnMap)
-                }
-            })
+        if (layersNeeded > 0) {
+            let layersToAdd = this.layers.length + layersNeeded
+            for (let i = this.layers.length; i < layersToAdd; i++) {
+                let layer = L.tileLayer(layers[i])
+                layer.addTo(this.map)
+                this.layers.push(layer)
+            }
+        } else if (layersNeeded < 0) {
+            for (let i = 0; i < Math.abs(layersNeeded); i++) {
+                let layer = this.layers.pop()
+                this.map.removeLayer(layer)
+            }
         }
+        this.updateLayerUrls(layers)
+    }
 
-
-    //    possible refactoring of above code:
-    //    Assuming I can extract the url from a map layer object (denoted as .url below)
-
-        let currentLayers = this.map.eachLayer((layerOnMap) => { layerOnMap.url })
-        let numberOfLayersToApply = layers.length()
-        let numberOfLayersCurrently = currentLayers.length()
-        if (numberOfLayersToApply === numberOfLayersCurrently) {
+    updateMapServices(url) {
+        if (!url[0] && (this.compositeLayer === null)) {
             return
-        }
-        function arr_diff (a1, a2) {
-            let a = [], diff = [];
-            for (let i = 0; i < a1.length; i++) {
-                a[a1[i]] = true;
-            }
-            for (let i = 0; i < a2.length; i++) {
-                if (a[a2[i]]) {
-                    delete a[a2[i]];
-                } else {
-                    a[a2[i]] = true;
-                }
-            }
-            for (let k in a) {
-                diff.push(k);
-            }
-            return diff;
-        }
-        let layerToAddOrRemove = arr_diff(layers, currentLayers)
-        if (numberOfLayersToApply > numberOfLayersCurrently) {
-            this.map.addLayer(L.tileLayer(layerToAddOrRemove))
+        } else if (this.compositeLayer === null) {
+            let newLayer = L.tileLayer(url)
+            newLayer.addTo(this.map)
+            this.compositeLayer = newLayer
+        } else if (!url[0]) {
+            this.map.removeLayer(this.compositeLayer)
+            this.compositeLayer = null
         } else {
-            this.map.removeLayer(L.tileLayer(layerToAddOrRemove))
+            this.compositeLayer.setUrl(url)
         }
     }
 
@@ -186,6 +166,8 @@ L.Icon.Default.mergeOptions({
 
     render() {
         this.updateState()
+        this.updateMapLayers(this.props.layersToDisplay)
+        this.updateMapServices(this.props.servicesUrl)
 
         return <div className="map-container">
             <div ref={input => {this.mapNode = input}} className="map-container"></div>
@@ -199,30 +181,14 @@ const mapStateToProps = (state) => {
     let createLayersToDisplay = (configuration) => {
         let layers = []
         let checkLayers = (c, latin) => {
-            if (c.distribution === '1961_1990') {
-                layers.push(latin + '_p1961_1990_800m_pa')
-            } else {
-                layers.push(latin + '_p1981_2010_800m_pa')
-            }
-            if (c.model.rcp45_2025 === true) {
-                layers.push(latin + '_15gcm_rcp45_2025_pa')
-            }
-            if (c.model.rcp45_2055 === true) {
-                layers.push(latin + '_15gcm_rcp45_2055_pa')
-            }
-            if (c.model.rcp45_2085 === true) {
-                layers.push(latin + '_15gcm_rcp45_2085_pa')
-            }
-            if (c.model.rcp85_2025 === true) {
-                layers.push(latin + '_15gcm_rcp85_2025_pa')
-            }
-            if (c.model.rcp85_2055 === true) {
-                layers.push(latin + '_15gcm_rcp85_2055_pa')
-            }
-            if (c.model.rcp85_2085 === true) {
-                layers.push(latin + '_15gcm_rcp85_2085_pa')
+            layers.push('/tiles/' + latin + '_p' + c.distribution + '_800m_pa/{z}/{x}/{y}.png')
+            for (let rcp_year in c.model) {
+                if (c.model[rcp_year]) {
+                    layers.push('/tiles/' + latin + '_15gcm_' + rcp_year + '_pa/{z}/{x}/{y}.png')
+                }
             }
         }
+
         switch(configuration.species) {
             case 'none':
                 return [];
@@ -246,8 +212,42 @@ const mapStateToProps = (state) => {
 
     let layersToDisplay = createLayersToDisplay(configuration)
 
+
+    let createServicesUrl = (configuration) => {
+        let outputUrl = "/spht/intersect/tiles/{z}/{x}/{y}.png?services="
+        let checkLayers = (c, latin) => {
+            outputUrl += (latin + '_p' + c.distribution + '_800m_pa')
+            for (let rcp_year in c.model) {
+                if (c.model[rcp_year]) {
+                    outputUrl += (',' + latin + '_15gcm_' + rcp_year + '_pa')
+                }
+            }
+        }
+        switch (configuration.species) {
+            case 'none':
+                return [];
+            case 'douglas-fir':
+                checkLayers(configuration, 'psme')
+                break;
+            case 'lodgepole_pine':
+                checkLayers(configuration, 'pico')
+                break;
+            case 'sitka_spruce':
+                checkLayers(configuration, 'pisi')
+                break;
+            case 'ponderosa_pine':
+                checkLayers(configuration, 'pipo')
+                break;
+            case 'engelmann_spruce':
+                checkLayers(configuration, 'pien')
+        }
+        return outputUrl
+    }
+
+    let servicesUrl = createServicesUrl(configuration)
+
     return {
-        point, layersToDisplay
+        point, layersToDisplay, servicesUrl
     }
 }
 
