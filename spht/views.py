@@ -86,13 +86,13 @@ class IntersectView(GetImageViewBase):
             ))
             self.close_dataset()
 
-            intersection = reduce(lambda x, y: x & y, grids)
+        intersection = reduce(lambda x, y: x & y, grids)
 
-            image = RENDERER.render_image(intersection, row_major_order=self.is_row_major(variable)).convert('RGBA')
+        image = RENDERER.render_image(intersection, row_major_order=self.is_row_major(variable)).convert('RGBA')
 
-            #  If y values are increasing, the rendered image needs to be flipped vertically
-            if self.is_y_increasing(variable):
-                image = image.transpose(Image.FLIP_TOP_BOTTOM)
+        #  If y values are increasing, the rendered image needs to be flipped vertically
+        if self.is_y_increasing(variable):
+            image = image.transpose(Image.FLIP_TOP_BOTTOM)
 
         image = GeoImage(image, grid_extent).warp(extent, TILE_SIZE).image
         image, content_type = self.format_image(image, 'png')
