@@ -21,8 +21,8 @@ L.Icon.Default.mergeOptions({
         this.map = null
 
         this.pointMarker = null
-        this.numberOfLayersCurrently = 0
         this.layers = []
+        this.compositeLayer = null
     }
 
     componentDidMount() {
@@ -125,6 +125,21 @@ L.Icon.Default.mergeOptions({
         this.updateLayerUrls(layers)
     }
 
+    updateMapServices(url) {
+        if (!url[0] && (this.compositeLayer === null)) {
+            return
+        } else if (this.compositeLayer === null) {
+            let newLayer = L.tileLayer(url)
+            newLayer.addTo(this.map)
+            this.compositeLayer = newLayer
+        } else if (!url[0]) {
+            this.map.removeLayer(this.compositeLayer)
+            this.compositeLayer = null
+        } else {
+            this.compositeLayer.setUrl(url)
+        }
+    }
+
     updatePoint(point) {
         let pointIsValid = point !== null && point.x && point.y
 
@@ -152,6 +167,7 @@ L.Icon.Default.mergeOptions({
     render() {
         this.updateState()
         this.updateMapLayers(this.props.layersToDisplay)
+        this.updateMapServices(this.props.servicesUrl)
 
         return <div className="map-container">
             <div ref={input => {this.mapNode = input}} className="map-container"></div>
@@ -196,8 +212,42 @@ const mapStateToProps = (state) => {
 
     let layersToDisplay = createLayersToDisplay(configuration)
 
+
+    let createServicesUrl = (configuration) => {
+        let outputUrl = "/spht/intersect/tiles/{z}/{x}/{y}.png?services="
+        let checkLayers = (c, latin) => {
+            outputUrl += (latin + '_p' + c.distribution + '_800m_pa')
+            for (let rcp_year in c.model) {
+                if (c.model[rcp_year]) {
+                    outputUrl += (',' + latin + '_15gcm_' + rcp_year + '_pa')
+                }
+            }
+        }
+        switch (configuration.species) {
+            case 'none':
+                return [];
+            case 'douglas-fir':
+                checkLayers(configuration, 'psme')
+                break;
+            case 'lodgepole_pine':
+                checkLayers(configuration, 'pico')
+                break;
+            case 'sitka_spruce':
+                checkLayers(configuration, 'pisi')
+                break;
+            case 'ponderosa_pine':
+                checkLayers(configuration, 'pipo')
+                break;
+            case 'engelmann_spruce':
+                checkLayers(configuration, 'pien')
+        }
+        return outputUrl
+    }
+
+    let servicesUrl = createServicesUrl(configuration)
+
     return {
-        point, layersToDisplay
+        point, layersToDisplay, servicesUrl
     }
 }
 
