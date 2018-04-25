@@ -23,6 +23,7 @@ L.Icon.Default.mergeOptions({
         this.pointMarker = null
         this.layers = []
         this.compositeLayer = null
+        this.overlapLayer = null
     }
 
     componentDidMount() {
@@ -165,11 +166,11 @@ L.Icon.Default.mergeOptions({
     }
 
 
-
     updateMap(urls) {
-        console.log(urls)
-        if (urls.length === 0) {
-            console.log("made it!")
+        if ((urls.length === 0) && (this.overlapLayer !== null)) {
+            this.map.removeLayer(this.overlapLayer)
+            return
+        } else if (urls.length === 0) {
             return
         }
         var tiles = new L.GridLayer();
@@ -189,12 +190,12 @@ L.Icon.Default.mergeOptions({
                 ctx.globalCompositeOperation = (i == 0 ? "source-out" : "source-in");
                 ctx.drawImage(images[i], 0, 0);
               }
-              if (color){
+
+              if (color) {
                 ctx.globalCompositeOperation = "source-atop"; // color existing pixels
                 ctx.fillStyle = color;
                 ctx.fillRect(0, 0, tile.width, tile.height);
               }
-
             }
           };
 
@@ -208,14 +209,12 @@ L.Icon.Default.mergeOptions({
           return tile;
         };
 
-        tiles.addTo(this.map)
-
+        if (this.overlapLayer !== null) {
+            this.map.removeLayer(this.overlapLayer)
+        }
+        this.overlapLayer = tiles
+        this.map.addLayer(this.overlapLayer)
     }
-
-
-
-
-
 
 
     render() {
