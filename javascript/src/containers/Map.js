@@ -23,6 +23,7 @@ L.Icon.Default.mergeOptions({
         this.pointMarker = null
         this.layers = []
         this.compositeLayer = null
+        this.overlapLayer = null
     }
 
     componentDidMount() {
@@ -164,10 +165,63 @@ L.Icon.Default.mergeOptions({
         this.updatePoint(point)
     }
 
+
+    updateMap(urls) {
+        if ((urls.length === 0) && (this.overlapLayer !== null)) {
+            this.map.removeLayer(this.overlapLayer)
+            return
+        } else if (urls.length === 0) {
+            return
+        }
+        var tiles = new L.GridLayer();
+        tiles.createTile = function(coords) {
+          var tile = L.DomUtil.create('canvas', 'leaflet-tile');
+          var ctx = tile.getContext('2d');
+          var size = this.getTileSize();
+          tile.width = size.x;
+          tile.height = size.y;
+          var color = "green";
+          var loaded = 0;
+
+          var drawTile = function(){
+            loaded += 1;
+            if (loaded == urls.length){
+              for (var i in images){
+                ctx.globalCompositeOperation = (i == 0 ? "source-out" : "source-in");
+                ctx.drawImage(images[i], 0, 0);
+              }
+
+              if (color) {
+                ctx.globalCompositeOperation = "source-atop"; // color existing pixels
+                ctx.fillStyle = color;
+                ctx.fillRect(0, 0, tile.width, tile.height);
+              }
+            }
+          };
+
+          var images = []
+          for (var url in urls) {
+            var img = new Image();
+            img.onload = drawTile;
+            img.src = `${urls[url]}/${coords.z}/${coords.x}/${coords.y}.png`;
+            images.push(img);
+          }
+          return tile;
+        };
+
+        if (this.overlapLayer !== null) {
+            this.map.removeLayer(this.overlapLayer)
+        }
+        this.overlapLayer = tiles
+        this.map.addLayer(this.overlapLayer)
+    }
+
+
     render() {
         this.updateState()
-        this.updateMapLayers(this.props.layersToDisplay)
-        this.updateMapServices(this.props.servicesUrl)
+        // this.updateMapLayers(this.props.layersToDisplay)
+        // this.updateMapServices(this.props.servicesUrl)
+        this.updateMap(this.props.layersToDisplay)
 
         return <div className="map-container">
             <div ref={input => {this.mapNode = input}} className="map-container"></div>
@@ -181,10 +235,10 @@ const mapStateToProps = (state) => {
     let createLayersToDisplay = (configuration) => {
         let layers = []
         let checkLayers = (c, latin) => {
-            layers.push('/tiles/' + latin + '_p' + c.distribution + '_800m_pa/{z}/{x}/{y}.png')
+            layers.push('/tiles/' + latin + '_p' + c.distribution + '_800m_pa')
             for (let rcp_year in c.model) {
                 if (c.model[rcp_year]) {
-                    layers.push('/tiles/' + latin + '_15gcm_' + rcp_year + '_pa/{z}/{x}/{y}.png')
+                    layers.push('/tiles/' + latin + '_15gcm_' + rcp_year + '_pa')
                 }
             }
         }
