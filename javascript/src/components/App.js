@@ -6,7 +6,6 @@ import Sidebar from './Sidebar'
 const App = () => (
     <div className="spht-app">
         <Navbar />
-
         <div className="columns is-gapless">
             <div className="column is-narrow sidebar">
                 <Sidebar />

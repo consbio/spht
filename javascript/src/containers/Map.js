@@ -4,6 +4,7 @@ import { setMapPoint } from '../actions/map'
 import { Lethargy } from 'lethargy'
 import L from 'leaflet'
 import 'leaflet-basemaps'
+import 'leaflet-zoombox'
 
 /* This is a workaround for a webpack-leaflet incompatibility (https://github.com/PaulLeCam/react-leaflet/issues/255)w */
 delete L.Icon.Default.prototype._getIconUrl;
@@ -22,7 +23,7 @@ L.Icon.Default.mergeOptions({
 
         this.pointMarker = null
         this.layers = []
-        this.compositeLayer = null
+        // this.compositeLayer = null
         this.overlapLayer = null
     }
 
@@ -53,6 +54,9 @@ L.Icon.Default.mergeOptions({
         })
 
         this.map.zoomControl.setPosition('topright')
+        this.map.addControl(L.control.zoomBox({
+            position: 'topright'
+        }))
 
         let basemapControl = L.control.basemaps({
             basemaps: [
@@ -103,7 +107,7 @@ L.Icon.Default.mergeOptions({
 
     updateLayerUrls(layers) {
         layers.forEach((layer, i) => {
-            this.layers[i].setUrl(layer)
+            this.layers[i].setUrl(layer + '/{z}/{x}/{y}.png')
         })
     }
 
@@ -113,7 +117,7 @@ L.Icon.Default.mergeOptions({
         if (layersNeeded > 0) {
             let layersToAdd = this.layers.length + layersNeeded
             for (let i = this.layers.length; i < layersToAdd; i++) {
-                let layer = L.tileLayer(layers[i])
+                let layer = L.tileLayer(layers[i], {opacity: 0.5})
                 layer.addTo(this.map)
                 this.layers.push(layer)
             }
@@ -126,20 +130,21 @@ L.Icon.Default.mergeOptions({
         this.updateLayerUrls(layers)
     }
 
-    updateMapServices(url) {
-        if (!url[0] && (this.compositeLayer === null)) {
-            return
-        } else if (this.compositeLayer === null) {
-            let newLayer = L.tileLayer(url)
-            newLayer.addTo(this.map)
-            this.compositeLayer = newLayer
-        } else if (!url[0]) {
-            this.map.removeLayer(this.compositeLayer)
-            this.compositeLayer = null
-        } else {
-            this.compositeLayer.setUrl(url)
-        }
-    }
+    // render composite images on the backend:
+    // updateMapServices(url) {
+    //     if (!url[0] && (this.compositeLayer === null)) {
+    //         return
+    //     } else if (this.compositeLayer === null) {
+    //         let newLayer = L.tileLayer(url)
+    //         newLayer.addTo(this.map)
+    //         this.compositeLayer = newLayer
+    //     } else if (!url[0]) {
+    //         this.map.removeLayer(this.compositeLayer)
+    //         this.compositeLayer = null
+    //     } else {
+    //         this.compositeLayer.setUrl(url)
+    //     }
+    // }
 
     updatePoint(point) {
         let pointIsValid = point !== null && point.x && point.y
@@ -166,7 +171,7 @@ L.Icon.Default.mergeOptions({
     }
 
 
-    updateMap(urls) {
+    updateCompositeLayer(urls) {
         if ((urls.length === 0) && (this.overlapLayer !== null)) {
             this.map.removeLayer(this.overlapLayer)
             return
@@ -219,9 +224,9 @@ L.Icon.Default.mergeOptions({
 
     render() {
         this.updateState()
-        // this.updateMapLayers(this.props.layersToDisplay)
+        this.updateMapLayers(this.props.layersToDisplay)
+        this.updateCompositeLayer(this.props.layersToDisplay)
         // this.updateMapServices(this.props.servicesUrl)
-        this.updateMap(this.props.layersToDisplay)
 
         return <div className="map-container">
             <div ref={input => {this.mapNode = input}} className="map-container"></div>
@@ -267,41 +272,43 @@ const mapStateToProps = (state) => {
     let layersToDisplay = createLayersToDisplay(configuration)
 
 
-    let createServicesUrl = (configuration) => {
-        let outputUrl = "/spht/intersect/tiles/{z}/{x}/{y}.png?services="
-        let checkLayers = (c, latin) => {
-            outputUrl += (latin + '_p' + c.distribution + '_800m_pa')
-            for (let rcp_year in c.model) {
-                if (c.model[rcp_year]) {
-                    outputUrl += (',' + latin + '_15gcm_' + rcp_year + '_pa')
-                }
-            }
-        }
-        switch (configuration.species) {
-            case 'none':
-                return [];
-            case 'douglas-fir':
-                checkLayers(configuration, 'psme')
-                break;
-            case 'lodgepole_pine':
-                checkLayers(configuration, 'pico')
-                break;
-            case 'sitka_spruce':
-                checkLayers(configuration, 'pisi')
-                break;
-            case 'ponderosa_pine':
-                checkLayers(configuration, 'pipo')
-                break;
-            case 'engelmann_spruce':
-                checkLayers(configuration, 'pien')
-        }
-        return outputUrl
-    }
-
-    let servicesUrl = createServicesUrl(configuration)
+    // let createServicesUrl = (configuration) => {
+    //     let outputUrl = "/spht/intersect/tiles/{z}/{x}/{y}.png?services="
+    //     let checkLayers = (c, latin) => {
+    //         outputUrl += (latin + '_p' + c.distribution + '_800m_pa')
+    //         for (let rcp_year in c.model) {
+    //             if (c.model[rcp_year]) {
+    //                 outputUrl += (',' + latin + '_15gcm_' + rcp_year + '_pa')
+    //             }
+    //         }
+    //     }
+    //     switch (configuration.species) {
+    //         case 'none':
+    //             return [];
+    //         case 'douglas-fir':
+    //             checkLayers(configuration, 'psme')
+    //             break;
+    //         case 'lodgepole_pine':
+    //             checkLayers(configuration, 'pico')
+    //             break;
+    //         case 'sitka_spruce':
+    //             checkLayers(configuration, 'pisi')
+    //             break;
+    //         case 'ponderosa_pine':
+    //             checkLayers(configuration, 'pipo')
+    //             break;
+    //         case 'engelmann_spruce':
+    //             checkLayers(configuration, 'pien')
+    //     }
+    //     return outputUrl
+    // }
+    //
+    // let servicesUrl = createServicesUrl(configuration)
 
     return {
-        point, layersToDisplay, servicesUrl
+        point,
+        layersToDisplay,
+        // servicesUrl
     }
 }
 
