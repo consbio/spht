@@ -4,6 +4,9 @@ import osu_logo from '../../images/osu_logo.png'
 import cbi_logo from '../../images/cbi_logo.png'
 import nw_climate_hub_logo from '../../images/nw_climate_hub_logo.png'
 
+//TODO: There is still some styling that needs to be done to match SST
+
+
 //TODO: rename to Modal class and make modal content connected to state
 class People extends Component {
     constructor(props) {
