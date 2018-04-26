@@ -9,7 +9,9 @@
 </head>
 <body>
     <div id="app"></div>
-    {% render_bundle 'vendor' 'js' %}
+    {% if not debug %}
+        {% render_bundle 'vendor' 'js' %}
+    {% endif %}
     {% render_bundle 'main' 'js' %}
 </body>
 </html>
