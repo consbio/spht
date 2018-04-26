@@ -37,9 +37,9 @@ SECRET_KEY = CONFIG.get(
         ))  # This results in a random secret key every time the settings are loaded. Not appropriate for production.
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = CONFIG.get('debug', True)
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = CONFIG.get('allowed_hosts', [])
 
 
 # Application definition
@@ -139,10 +139,14 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.11/howto/static-files/
 
+STATIC_ROOT = CONFIG.get('static-root', '/var/www/static/')
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, 'javascript/build')
+]
 STATIC_URL = '/static/'
 
 STATICFILES_DIRS = (
-    os.path.join(BASE_DIR, 'javascript'),
+    os.path.join(BASE_DIR, 'javascript/build'),
 )
 
 NC_SERVICE_DATA_ROOT = CONFIG.get('data_root', 'data/ncdjango/services')
@@ -153,3 +157,17 @@ NC_INSTALLED_INTERFACES = (
     'ncdjango.interfaces.arcgis',
     'interfaces.tiles'
 )
+
+WEBPACK_LOADER = {
+    'DEFAULT': {
+        'CACHE': not DEBUG,
+        'BUNDLE_DIR_NAME': 'webpack_bundles/', # must end with slash
+        'STATS_FILE': os.path.join(BASE_DIR, 'webpack-stats.json'),
+        'POLL_INTERVAL': 0.1,
+        'TIMEOUT': None,
+        'IGNORE': ['.+\.hot-update.js', '.+\.map']
+    }
+}
+
+if not DEBUG:
+    WEBPACK_LOADER['DEFAULT']['BUNDLE_DIR_NAME'] = '/'

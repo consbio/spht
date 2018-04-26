@@ -1,0 +1,12 @@
+version: 0.2
+
+phases:
+  install:
+    commands:
+      - (cd javascript && npm install)
+  build:
+    commands:
+      - (cd javascript && npm run-script build)
+
+artifacts:
+  files: "**/*"

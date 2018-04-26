@@ -5,6 +5,7 @@ __pycache__/
 db\.sqlite3
 
 javascript/npm-debug\.log
+javascript/build/
 
 webpack-stats\.json
 config.json

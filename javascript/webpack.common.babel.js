@@ -1,35 +1,17 @@
 import path from 'path'
-import BundleTracker from 'webpack-bundle-tracker'
 import ExtractTextPlugin from 'extract-text-webpack-plugin'
+import BundleTracker from "webpack-bundle-tracker"
 
 export default {
     context: __dirname,
     entry: [
-        'webpack-dev-server/client?http://localhost:3000',
-        'webpack/hot/only-dev-server',
         './src/index',
         './scss/spht.scss'
     ],
-    output: {
-        path: path.resolve(__dirname, 'webpack_bundles'),
-        filename: '[name].bundle.js',
-        publicPath: 'http://localhost:3000/assets/bundles/',
-        crossOriginLoading: 'anonymous'
-    },
     plugins: [
-        new ExtractTextPlugin({filename: '[name].bundle.css'}),
-        new BundleTracker({filename: '../webpack-stats.json'})
+        new BundleTracker({filename: '../webpack-stats.json'}),
+        new ExtractTextPlugin({filename: '[name].bundle.css'})
     ],
-    devServer: {
-        contentBase: './',
-        hot: true,
-        host: '127.0.0.1',
-        port: 3000,
-        inline: true,
-        publicPath: '/assets/bundles/',
-        stats: ['minimal', 'color'],
-        headers: { "Access-Control-Allow-Origin": "*" }
-    },
     module: {
         rules: [
             {
