@@ -31,7 +31,11 @@ class Navbar extends React.Component {
             </div>
             <div className={isActive + "navbar-menu"}>
                 <div className="navbar-end">
-                    <a className="navbar-item" href="#">
+                    <a
+                        className="navbar-item"
+                        href="#"
+                        onClick={() => this.props.onTabSelect("people")}
+                    >
                         People
                     </a>
                     <a className="navbar-item" href="#">
