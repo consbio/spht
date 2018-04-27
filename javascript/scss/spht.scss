@@ -11,6 +11,7 @@ $family-strong: "Arial Black", "Arial Bold", Gadget, sans-serif;
 @import '~leaflet/dist/leaflet.css';
 @import '~leaflet-basemaps/L.Control.Basemaps.css';
 @import '~leaflet-zoombox/L.Control.ZoomBox.css';
+@import '~leaflet-geonames/L.Control.Geonames.css';
 
 .spht-app > .columns {
   position: absolute;

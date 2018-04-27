@@ -5,6 +5,8 @@ import { Lethargy } from 'lethargy'
 import L from 'leaflet'
 import 'leaflet-basemaps'
 import 'leaflet-zoombox'
+//TODO: 'leaflet-geonames'?
+import '../../node_modules/leaflet-geonames/L.Control.Geonames.min'
 
 /* This is a workaround for a webpack-leaflet incompatibility (https://github.com/PaulLeCam/react-leaflet/issues/255)w */
 delete L.Icon.Default.prototype._getIconUrl;
@@ -57,6 +59,20 @@ L.Icon.Default.mergeOptions({
         this.map.addControl(L.control.zoomBox({
             position: 'topright'
         }))
+
+        let geonamesControl = L.control.geonames({
+            position: 'topright',
+            // TODO: username correct?
+            username: 'spht',
+            showMarker: false,
+            showPopup: false
+        })
+        geonamesControl.on('select', ({ geoname }) => {
+            let latlng = {lat: parseFloat(geoname.lat), lng: parseFloat(geoname.lng)}
+            this.map.setView(latlng);
+            this.map.fire('click', {latlng})
+        })
+        this.map.addControl(geonamesControl)
 
         let basemapControl = L.control.basemaps({
             basemaps: [
