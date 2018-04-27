@@ -15,6 +15,7 @@ psycopg2-binary = "==2.7.4"
 mercantile = "==1.0.1"
 clover = { git = 'https://github.com/consbio/clover.git' }
 pyproj = "*"
+aiohttp = "*"
 
 [requires]
 python_version = "3.6"
