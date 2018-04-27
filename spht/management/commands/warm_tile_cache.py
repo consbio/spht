@@ -8,7 +8,7 @@ from ncdjango.models import Service
 from pyproj import Proj
 from django.conf import settings
 
-ZOOM_LEVELS = list(range(10))
+ZOOM_LEVELS = list(range(7))
 WGS84 = Proj('+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs')
 TILE_URL = 'http://127.0.0.1/tiles/{service}/{z}/{x}/{y}.png'
 MAX_CONCURRENCY = 10
