@@ -112,3 +112,11 @@ em {
   font-weight: bold;
 }
 
+@include tablet {
+  .tabs.is-boxed li.is-active-tablet a {
+    color: $tabs-link-active-color;
+    background-color: $tabs-boxed-link-active-background-color;
+    border-color: $tabs-boxed-link-active-border-color;
+    border-bottom-color: $tabs-boxed-link-active-border-bottom-color !important;
+  }
+}
