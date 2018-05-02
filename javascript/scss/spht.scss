@@ -13,6 +13,37 @@ $family-strong: "Arial Black", "Arial Bold", Gadget, sans-serif;
 @import '~leaflet-zoombox/L.Control.ZoomBox.css';
 @import '~leaflet-geonames/L.Control.Geonames.css';
 
+@mixin ios-mobile-portrait {
+  @media only screen
+  and (min-device-width: 320px)
+  and (max-device-width: 480px)
+  and (-webkit-min-device-pixel-ration: 2)
+  and (orientation: portrait) {
+    @content;
+  }
+}
+
+// IE fixes
+@include tablet {
+  .modal-card {
+    margin: 0;
+  }
+}
+// End IE fixes
+
+@include ios-mobile-portrait {
+  .modal-card {
+    position: static;
+    margin-top: #{$header-height * 1.5};
+  }
+
+  .modal-card-body {
+    max-height: calc(100vh - 146px - #{$header-height * 1.5});
+    background: $white;
+    z-index: 10;
+  }
+}
+
 .spht-app > .columns {
   position: absolute;
   margin-top: $header-height;
