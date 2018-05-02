@@ -30,17 +30,15 @@ class Command(BaseCommand):
     async def fetch_tiles(self, tiles):
         async with aiohttp.ClientSession() as session:
             coroutines = (self.fetch_tile(session, *t) for t in tiles)
-            futures = set([asyncio.ensure_future(c) for c in islice(coroutines, 0, MAX_CONCURRENCY)])
+            futures = []
 
             while True:
-                await asyncio.sleep(.1)
-                for f in copy.copy(futures):
-                    if f.done():
-                        futures.remove(f)
-                        try:
-                            futures.add(asyncio.ensure_future(next(coroutines)))
-                        except StopIteration:
-                            continue
+                futures += [asyncio.ensure_future(c) for c in islice(coroutines, 0, MAX_CONCURRENCY - len(futures))]
+                if not futures:
+                    break
+
+                await asyncio.wait(futures, return_when=asyncio.FIRST_COMPLETED)
+                futures = [f for f in futures if not f.done()]
 
     def handle(self, *args, **kwargs):
         tiles = []
