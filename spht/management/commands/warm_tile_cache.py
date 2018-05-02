@@ -2,6 +2,7 @@ import asyncio
 from itertools import islice
 
 import aiohttp
+import copy
 import mercantile
 from django.core.management import BaseCommand
 from ncdjango.models import Service
@@ -32,8 +33,8 @@ class Command(BaseCommand):
             futures = set([asyncio.ensure_future(c) for c in islice(coroutines, 0, MAX_CONCURRENCY)])
 
             while True:
-                await asyncio.sleep(0)
-                for f in futures:
+                await asyncio.sleep(.1)
+                for f in copy.copy(futures):
                     if f.done():
                         futures.remove(f)
                         try:
