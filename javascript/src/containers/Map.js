@@ -23,6 +23,7 @@ L.Icon.Default.mergeOptions({
         this.pointMarker = null
         this.layers = []
         this.compositeLayer = null
+
     }
 
     componentDidMount() {
@@ -160,52 +161,77 @@ L.Icon.Default.mergeOptions({
     }
 
     updateCompositeLayer(urls) {
-        if ((urls.length === 0) && (this.compositeLayer !== null)) {
-            this.map.removeLayer(this.compositeLayer)
-            return
-        } else if (urls.length === 0) {
+        if (urls.length === 0) {
             return
         }
+        let DivLayer = L.GridLayer.extend({
+            createTile: function (coords) {
+                let tile = L.DomUtil.create('div', 'leaflet-tile')
+                let size = this.getTileSize()
+                let canvases = {
+                    multiHab: null,
+                    lostHab: null,
+                    keptHab: null,
+                    newHab: null
+                }
 
-        let tiles = new L.GridLayer()
+                Object.keys(canvases).forEach((canvas) => {
+                    canvases[canvas] = L.DomUtil.create('canvas', 'habitat-canvas', tile)
+                    canvases[canvas].width = size.x
+                    canvases[canvas].height = size.y
+                })
 
-        tiles.createTile = function(coords) {
-            let tile = L.DomUtil.create('canvas', 'leaflet-tile')
-            let ctx = tile.getContext('2d')
-            let size = this.getTileSize()
-            tile.width = size.x
-            tile.height = size.y
-            let color = "green"
-            let loaded = 0
-            let images = []
+                let color = "green"
+                let loaded = 0
+                let images = []
+                let drawHabitatCanvas = (canvas, m1, m2, op, color) => {
 
-            urls.forEach((url) => {
-                let img = new Image()
-                img.onload = () => {
-                    loaded += 1
-                    if (loaded === urls.length){
-                        images.forEach((image, i) => {
-                            ctx.globalCompositeOperation = (i === 0 ? "source-out" : "source-in")
-                            ctx.drawImage(image, 0, 0)
-                        })
-                        if (color) {
-                            ctx.globalCompositeOperation = "source-atop" // color existing pixels
-                            ctx.fillStyle = color
-                            ctx.fillRect(0, 0, tile.width, tile.height)
+                    let ctx = canvas.getContext('2d');
+                    ctx.drawImage(m1, 0, 0)
+                    ctx.globalCompositeOperation = op
+                    ctx.drawImage(m2, 0, 0)
+                    // add color
+                    ctx.globalCompositeOperation = "source-atop"
+                    ctx.fillStyle = color
+                    ctx.fillRect(0, 0, canvas.width, canvas.height)
+                }
+
+                urls.forEach((url) => {
+                    let img = new Image()
+                    img.onload = () => {
+                        loaded += 1
+                        if (loaded === urls.length) {
+                            if (urls.length !== 2) {
+                                let c = canvases.multiHab
+                                let ctx = c.getContext("2d")
+                                images.forEach((image, i) => {
+                                    ctx.globalCompositeOperation = (i === 0 ? "source-out" : "source-in")
+                                    ctx.drawImage(image, 0, 0)
+                                })
+                                if (color) {
+                                    ctx.globalCompositeOperation = "source-atop" // color existing pixels
+                                    ctx.fillStyle = color
+                                    ctx.fillRect(0, 0, c.width, c.height)
+                                }
+                            } else {
+                                let historicalMap = images[0] // Current or historical distribution is always first in array
+                                let futureMap = images[1]
+                                drawHabitatCanvas(canvases.lostHab, historicalMap, futureMap, "destination-out", "red");
+                                drawHabitatCanvas(canvases.keptHab, historicalMap, futureMap, "source-in", "green");
+                                drawHabitatCanvas(canvases.newHab, futureMap, historicalMap, "destination-out", "blue");
+                            }
                         }
                     }
-                }
-                img.src = `${url}/${coords.z}/${coords.x}/${coords.y}.png`
-                images.push(img)
-            })
-
-            return tile
-        }
-
-        if (this.compositeLayer !== null) {
+                    img.src = `${url}/${coords.z}/${coords.x}/${coords.y}.png`
+                    images.push(img)
+                })
+                return tile
+            }
+        })
+        if (this.compositeLayer != null) {
             this.map.removeLayer(this.compositeLayer)
         }
-        this.compositeLayer = tiles
+        this.compositeLayer = new DivLayer()
         this.map.addLayer(this.compositeLayer)
     }
 
