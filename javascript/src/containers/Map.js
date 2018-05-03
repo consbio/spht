@@ -1,11 +1,13 @@
 import React from 'react'
 import { connect } from 'react-redux'
 import { setMapPoint } from '../actions/map'
+import { setLayerOpacity } from '../actions/map'
 import { Lethargy } from 'lethargy'
 import L from 'leaflet'
 import 'leaflet-basemaps'
 import 'leaflet-zoombox'
 import 'leaflet-geonames/L.Control.Geonames'
+import 'leaflet-range'
 
 /* This is a workaround for a webpack-leaflet incompatibility (https://github.com/PaulLeCam/react-leaflet/issues/255)w */
 delete L.Icon.Default.prototype._getIconUrl;
@@ -69,6 +71,19 @@ L.Icon.Default.mergeOptions({
             this.map.fire('click', {latlng})
         })
         this.map.addControl(geonamesControl)
+
+        let opacityControl = L.control.range({
+            position: 'topright',
+            min: 0,
+            max: 1,
+            value: 0.70,
+            step: .01,
+            orient: 'vertical',
+        })
+        opacityControl.on('input change', (e) => {
+            this.props.onSetOpacity(e.value)
+        })
+        this.map.addControl(opacityControl)
 
         let basemapControl = L.control.basemaps({
             basemaps: [
@@ -147,7 +162,6 @@ L.Icon.Default.mergeOptions({
 
         if (pointIsValid) {
             if (this.pointMarker === null) {
-                console.log(this.state)
                 this.pointMarker = L.marker([point.y, point.x]).addTo(this.map)
             }
             else {
@@ -233,6 +247,7 @@ L.Icon.Default.mergeOptions({
         }
         this.compositeLayer = new DivLayer()
         this.map.addLayer(this.compositeLayer)
+        this.compositeLayer.setOpacity(this.props.layerOpacity)
     }
 
     updateState() {
@@ -241,6 +256,9 @@ L.Icon.Default.mergeOptions({
         this.updatePoint(point)
         // this.updateMapLayers(this.props.layersToDisplay)
         this.updateCompositeLayer(this.props.layersToDisplay)
+        if (this.compositeLayer !== null){
+           this.compositeLayer.setOpacity(this.props.layerOpacity)
+        }
     }
 
     render() {
@@ -251,6 +269,7 @@ L.Icon.Default.mergeOptions({
         </div>
     }
 }
+
 
 const mapStateToProps = ({ map, configuration }) => {
     let { point } = map
@@ -268,9 +287,12 @@ const mapStateToProps = ({ map, configuration }) => {
     }
     checkLayers(configuration)
 
+    let { layerOpacity } = map
+
     return {
         point,
-        layersToDisplay
+        layersToDisplay,
+        layerOpacity
     }
 }
 
@@ -278,6 +300,9 @@ const mapDispatchToProps = dispatch => {
     return {
         onSetPoint: (x, y) => {
             dispatch(setMapPoint(x, y))
+        },
+        onSetOpacity: (opacity) => {
+            dispatch(setLayerOpacity(opacity))
         }
     }
 }

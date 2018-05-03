@@ -12,6 +12,7 @@ $family-strong: "Arial Black", "Arial Bold", Gadget, sans-serif;
 @import '~leaflet-basemaps/L.Control.Basemaps.css';
 @import '~leaflet-zoombox/L.Control.ZoomBox.css';
 @import '~leaflet-geonames/L.Control.Geonames.css';
+@import '~leaflet-range/L.Control.Range.css';
 
 @mixin ios-mobile-portrait {
   @media only screen
@@ -165,5 +166,5 @@ em {
   left: 0;
   top: 0;
   z-index: 0;
-  opacity: 0.7;
+  opacity: 1.0;
 }
