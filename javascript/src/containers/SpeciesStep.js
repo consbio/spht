@@ -17,11 +17,11 @@ class SpeciesStep extends Component {
                             onChange={(e) => this.props.onChange(e.target.value)}
                         >
                             <option value="none">Select</option>
-                            <option value="lodgepole_pine">Lodgepole Pine</option>
-                            <option value="douglas-fir">Douglas-fir</option>
-                            <option value="sitka_spruce">Sitka Spruce</option>
-                            <option value="ponderosa_pine">Ponderosa Pine</option>
-                            <option value="engelmann_spruce">Engelmann Spruce</option>
+                            <option value="pico">Lodgepole Pine</option>
+                            <option value="psme">Douglas-fir</option>
+                            <option value="pisi">Sitka Spruce</option>
+                            <option value="pipo">Ponderosa Pine</option>
+                            <option value="pien">Engelmann Spruce</option>
                         </select>
                     </div>
                 </div>
@@ -32,7 +32,7 @@ class SpeciesStep extends Component {
 }
 
 function mapDispatchToProps(dispatch) {
-    return bindActionCreators({ onChange: setSpecies }, dispatch);
+    return bindActionCreators({ onChange: setSpecies }, dispatch)
 }
 
 const mapStateToProps = state => {

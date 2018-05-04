@@ -45,7 +45,7 @@ INTERNAL_IPS = ['127.0.0.1']
 
 ALLOWED_HOSTS = CONFIG.get('allowed_hosts', [])
 
-PREVIEW_MODE = True
+PREVIEW_MODE = CONFIG.get('preview_mode', False)
 PREVIEW_PASSWORD = 'sphtearlyaccess'
 PREVIEW_EXPIRES = datetime.datetime(2019, 9, 23, tzinfo=pytz.timezone('US/Pacific'))
 
@@ -76,10 +76,6 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'preview.middleware.PreviewAccessMiddleware'
-]
-
-MIDDLEWARE_CLASSES = [
-
 ]
 
 ROOT_URLCONF = 'spht_project.urls'

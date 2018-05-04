@@ -11,19 +11,24 @@ class ModelConditionsStep extends Component {
         let onChange = input => { this.props.setModel(input) }
 
         return <div className="configuration-step">
-            <h4 className="title is-5"><span className="badge">3</span> Select Modeling Conditions <span data-tip
-                                                                                                         data-for='modeling-info'
-                                                                                                         style={{'fontSize': '.8em'}}>&#9432;</span>
+            <h4 className="title is-5"><span className="badge">3</span>
+                &nbsp;Select Modeling Conditions&nbsp;
+                <span data-tip
+                      data-for='modeling-info'
+                      style={{'fontSize': '.8em'}}
+                >
+                    &#9432;
+                </span>
             </h4>
             <div className="step-content">
-                <ReactTooltip id='modeling-info'>
-                    <p>You can select one or more future time ranges</p>
-                    <p>(it will overlay all selections on a single map)</p>
-                    <p>as well as the modeling conditions to predict</p>
-                    <p>future regions that will have climactic conditions</p>
-                    <p>similar to the distribution you have selected.</p>
-                    <p>RCP 4.5 is a more conservative estimate of future</p>
-                    <p>CO2 levels than RCP 8.5.</p>
+                <ReactTooltip id="modeling-info" className="tooltip">
+                    You can select one or more future time ranges
+                    (it will overlay all selections on a single map)
+                    as well as the modeling conditions to predict
+                    future regions that will have climactic conditions
+                    similar to the distribution you have selected.
+                    RCP 4.5 is a more conservative estimate of future
+                    CO2 levels than RCP 8.5.
                 </ReactTooltip>
                 <em>Select a future time range and a model</em>
                 <div>&nbsp;</div>

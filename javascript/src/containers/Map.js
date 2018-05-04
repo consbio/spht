@@ -213,7 +213,7 @@ L.Icon.Default.mergeOptions({
         let { point } = this.props
 
         this.updatePoint(point)
-        this.updateMapLayers(this.props.layersToDisplay)
+        // this.updateMapLayers(this.props.layersToDisplay)
         this.updateCompositeLayer(this.props.layersToDisplay)
     }
 
@@ -229,33 +229,18 @@ L.Icon.Default.mergeOptions({
 const mapStateToProps = ({ map, configuration }) => {
     let { point } = map
     let layersToDisplay = []
-    let checkLayers = (c, latin) => {
-        layersToDisplay.push('/tiles/' + latin + '_p' + c.distribution + '_800m_pa')
+    let checkLayers = (c) => {
+        if (c.species === "none") {
+            return
+        }
+        layersToDisplay.push(`/tiles/${c.species}_p${c.distribution}_800m_pa`)
         Object.keys(c.model).forEach((rcp_year) => {
             if (c.model[rcp_year]) {
-                layersToDisplay.push('/tiles/' + latin + '_15gcm_' + rcp_year + '_pa')
+                layersToDisplay.push(`/tiles/${c.species}_15gcm_${rcp_year}_pa`)
             }
         })
     }
-
-    switch(configuration.species) {
-        case 'none':
-            break;
-        case 'douglas-fir':
-            checkLayers(configuration, 'psme')
-            break;
-        case 'lodgepole_pine':
-            checkLayers(configuration, 'pico')
-            break;
-        case 'sitka_spruce':
-            checkLayers(configuration, 'pisi')
-            break;
-        case 'ponderosa_pine':
-            checkLayers(configuration, 'pipo')
-            break;
-        case 'engelmann_spruce':
-            checkLayers(configuration, 'pien')
-    }
+    checkLayers(configuration)
 
     return {
         point,

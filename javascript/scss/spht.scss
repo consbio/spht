@@ -151,3 +151,11 @@ em {
     border-bottom-color: $tabs-boxed-link-active-border-bottom-color !important;
   }
 }
+
+.modal-content {
+  display: none;
+}
+
+.tooltip {
+  max-width: 400px;
+}
