@@ -1,12 +1,14 @@
-import React, { Component } from 'react';
+import React, { Component } from 'react'
 import Tool from './Tool'
 import About from './About'
 
+
 class Sidebar extends Component {
     constructor(props) {
-        super(props);
+        super(props)
         this.state = {activeTab: "about"}
     }
+
     render() {
         let activeTab = this.state.activeTab
         return (

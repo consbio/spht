@@ -2,19 +2,18 @@ import React from 'react'
 import Map from '../containers/Map'
 import Navbar from './Navbar'
 import Sidebar from './Sidebar'
+import Modal from './Modal'
 
-const App = () => (
+export default () => (
     <div className="spht-app">
-        <Navbar />
+        <Navbar/>
         <div className="columns is-gapless">
             <div className="column is-narrow sidebar">
-                <Sidebar />
+                <Sidebar/>
             </div>
             <div className="column map">
-                <Map />
+                <Map/>
             </div>
         </div>
     </div>
 )
-
-export default App

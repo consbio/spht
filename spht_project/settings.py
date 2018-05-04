@@ -16,6 +16,8 @@ import json
 
 import random
 import string
+import datetime
+import pytz
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -43,6 +45,9 @@ INTERNAL_IPS = ['127.0.0.1']
 
 ALLOWED_HOSTS = CONFIG.get('allowed_hosts', [])
 
+PREVIEW_MODE = CONFIG.get('preview_mode', False)
+PREVIEW_PASSWORD = 'sphtearlyaccess'
+PREVIEW_EXPIRES = datetime.datetime(2019, 9, 23, tzinfo=pytz.timezone('US/Pacific'))
 
 # Application definition
 
@@ -57,7 +62,9 @@ INSTALLED_APPS = [
     'ncdjango',
     'webpack_loader',
 
-    'spht'
+    'spht',
+
+    'preview'
 ]
 
 MIDDLEWARE = [
@@ -68,6 +75,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'preview.middleware.PreviewAccessMiddleware'
 ]
 
 ROOT_URLCONF = 'spht_project.urls'

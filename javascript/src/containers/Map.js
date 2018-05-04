@@ -5,6 +5,7 @@ import { Lethargy } from 'lethargy'
 import L from 'leaflet'
 import 'leaflet-basemaps'
 import 'leaflet-zoombox'
+import 'leaflet-geonames/L.Control.Geonames'
 
 /* This is a workaround for a webpack-leaflet incompatibility (https://github.com/PaulLeCam/react-leaflet/issues/255)w */
 delete L.Icon.Default.prototype._getIconUrl;
@@ -17,14 +18,11 @@ L.Icon.Default.mergeOptions({
     class Map extends React.Component {
     constructor(props) {
         super(props)
-
         this.mapNode = null
         this.map = null
-
         this.pointMarker = null
         this.layers = []
-        // this.compositeLayer = null
-        this.overlapLayer = null
+        this.compositeLayer = null
     }
 
     componentDidMount() {
@@ -57,6 +55,19 @@ L.Icon.Default.mergeOptions({
         this.map.addControl(L.control.zoomBox({
             position: 'topright'
         }))
+
+        let geonamesControl = L.control.geonames({
+            position: 'topright',
+            username: 'spht',
+            showMarker: false,
+            showPopup: false
+        })
+        geonamesControl.on('select', ({ geoname }) => {
+            let latlng = {lat: parseFloat(geoname.lat), lng: parseFloat(geoname.lng)}
+            this.map.setView(latlng);
+            this.map.fire('click', {latlng})
+        })
+        this.map.addControl(geonamesControl)
 
         let basemapControl = L.control.basemaps({
             basemaps: [
@@ -130,22 +141,6 @@ L.Icon.Default.mergeOptions({
         this.updateLayerUrls(layers)
     }
 
-    // render composite images on the backend:
-    // updateMapServices(url) {
-    //     if (!url[0] && (this.compositeLayer === null)) {
-    //         return
-    //     } else if (this.compositeLayer === null) {
-    //         let newLayer = L.tileLayer(url)
-    //         newLayer.addTo(this.map)
-    //         this.compositeLayer = newLayer
-    //     } else if (!url[0]) {
-    //         this.map.removeLayer(this.compositeLayer)
-    //         this.compositeLayer = null
-    //     } else {
-    //         this.compositeLayer.setUrl(url)
-    //     }
-    // }
-
     updatePoint(point) {
         let pointIsValid = point !== null && point.x && point.y
 
@@ -164,69 +159,66 @@ L.Icon.Default.mergeOptions({
         }
     }
 
-    updateState() {
-        let { point } = this.props
-
-        this.updatePoint(point)
-    }
-
-
     updateCompositeLayer(urls) {
-        if ((urls.length === 0) && (this.overlapLayer !== null)) {
-            this.map.removeLayer(this.overlapLayer)
+        if ((urls.length === 0) && (this.compositeLayer !== null)) {
+            this.map.removeLayer(this.compositeLayer)
             return
         } else if (urls.length === 0) {
             return
         }
-        var tiles = new L.GridLayer();
+
+        let tiles = new L.GridLayer()
+
         tiles.createTile = function(coords) {
-          var tile = L.DomUtil.create('canvas', 'leaflet-tile');
-          var ctx = tile.getContext('2d');
-          var size = this.getTileSize();
-          tile.width = size.x;
-          tile.height = size.y;
-          var color = "green";
-          var loaded = 0;
+            let tile = L.DomUtil.create('canvas', 'leaflet-tile')
+            let ctx = tile.getContext('2d')
+            let size = this.getTileSize()
+            tile.width = size.x
+            tile.height = size.y
+            let color = "green"
+            let loaded = 0
+            let images = []
 
-          var drawTile = function(){
-            loaded += 1;
-            if (loaded == urls.length){
-              for (var i in images){
-                ctx.globalCompositeOperation = (i == 0 ? "source-out" : "source-in");
-                ctx.drawImage(images[i], 0, 0);
-              }
+            urls.forEach((url) => {
+                let img = new Image()
+                img.onload = () => {
+                    loaded += 1
+                    if (loaded === urls.length){
+                        images.forEach((image, i) => {
+                            ctx.globalCompositeOperation = (i === 0 ? "source-out" : "source-in")
+                            ctx.drawImage(image, 0, 0)
+                        })
+                        if (color) {
+                            ctx.globalCompositeOperation = "source-atop" // color existing pixels
+                            ctx.fillStyle = color
+                            ctx.fillRect(0, 0, tile.width, tile.height)
+                        }
+                    }
+                }
+                img.src = `${url}/${coords.z}/${coords.x}/${coords.y}.png`
+                images.push(img)
+            })
 
-              if (color) {
-                ctx.globalCompositeOperation = "source-atop"; // color existing pixels
-                ctx.fillStyle = color;
-                ctx.fillRect(0, 0, tile.width, tile.height);
-              }
-            }
-          };
-
-          var images = []
-          for (var url in urls) {
-            var img = new Image();
-            img.onload = drawTile;
-            img.src = `${urls[url]}/${coords.z}/${coords.x}/${coords.y}.png`;
-            images.push(img);
-          }
-          return tile;
-        };
-
-        if (this.overlapLayer !== null) {
-            this.map.removeLayer(this.overlapLayer)
+            return tile
         }
-        this.overlapLayer = tiles
-        this.map.addLayer(this.overlapLayer)
+
+        if (this.compositeLayer !== null) {
+            this.map.removeLayer(this.compositeLayer)
+        }
+        this.compositeLayer = tiles
+        this.map.addLayer(this.compositeLayer)
     }
 
+    updateState() {
+        let { point } = this.props
+
+        this.updatePoint(point)
+        // this.updateMapLayers(this.props.layersToDisplay)
+        this.updateCompositeLayer(this.props.layersToDisplay)
+    }
 
     render() {
         this.updateState()
-        this.updateMapLayers(this.props.layersToDisplay)
-        this.updateCompositeLayer(this.props.layersToDisplay)
-        // this.updateMapServices(this.props.servicesUrl)
 
         return <div className="map-container">
             <div ref={input => {this.mapNode = input}} className="map-container"></div>
@@ -234,81 +226,25 @@ L.Icon.Default.mergeOptions({
     }
 }
 
-const mapStateToProps = (state) => {
-    let { point } = state.map
-    let configuration = state.configuration
-    let createLayersToDisplay = (configuration) => {
-        let layers = []
-        let checkLayers = (c, latin) => {
-            layers.push('/tiles/' + latin + '_p' + c.distribution + '_800m_pa')
-            for (let rcp_year in c.model) {
-                if (c.model[rcp_year]) {
-                    layers.push('/tiles/' + latin + '_15gcm_' + rcp_year + '_pa')
-                }
+const mapStateToProps = ({ map, configuration }) => {
+    let { point } = map
+    let layersToDisplay = []
+    let checkLayers = (c) => {
+        if (c.species === "none") {
+            return
+        }
+        layersToDisplay.push(`/tiles/${c.species}_p${c.distribution}_800m_pa`)
+        Object.keys(c.model).forEach((rcp_year) => {
+            if (c.model[rcp_year]) {
+                layersToDisplay.push(`/tiles/${c.species}_15gcm_${rcp_year}_pa`)
             }
-        }
-
-        switch(configuration.species) {
-            case 'none':
-                return [];
-            case 'douglas-fir':
-                checkLayers(configuration, 'psme')
-                break;
-            case 'lodgepole_pine':
-                checkLayers(configuration, 'pico')
-                break;
-            case 'sitka_spruce':
-                checkLayers(configuration, 'pisi')
-                break;
-            case 'ponderosa_pine':
-                checkLayers(configuration, 'pipo')
-                break;
-            case 'engelmann_spruce':
-                checkLayers(configuration, 'pien')
-        }
-        return layers
+        })
     }
-
-    let layersToDisplay = createLayersToDisplay(configuration)
-
-
-    // let createServicesUrl = (configuration) => {
-    //     let outputUrl = "/spht/intersect/tiles/{z}/{x}/{y}.png?services="
-    //     let checkLayers = (c, latin) => {
-    //         outputUrl += (latin + '_p' + c.distribution + '_800m_pa')
-    //         for (let rcp_year in c.model) {
-    //             if (c.model[rcp_year]) {
-    //                 outputUrl += (',' + latin + '_15gcm_' + rcp_year + '_pa')
-    //             }
-    //         }
-    //     }
-    //     switch (configuration.species) {
-    //         case 'none':
-    //             return [];
-    //         case 'douglas-fir':
-    //             checkLayers(configuration, 'psme')
-    //             break;
-    //         case 'lodgepole_pine':
-    //             checkLayers(configuration, 'pico')
-    //             break;
-    //         case 'sitka_spruce':
-    //             checkLayers(configuration, 'pisi')
-    //             break;
-    //         case 'ponderosa_pine':
-    //             checkLayers(configuration, 'pipo')
-    //             break;
-    //         case 'engelmann_spruce':
-    //             checkLayers(configuration, 'pien')
-    //     }
-    //     return outputUrl
-    // }
-    //
-    // let servicesUrl = createServicesUrl(configuration)
+    checkLayers(configuration)
 
     return {
         point,
-        layersToDisplay,
-        // servicesUrl
+        layersToDisplay
     }
 }
 
