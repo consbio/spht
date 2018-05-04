@@ -78,30 +78,35 @@ class Navbar extends React.Component {
                                     Oregon State University, Corvallis, Oregon, USA<br/>
                                     <a href="mailto:glenn.howe@oregonstate.edu">glenn.howe@oregonstate.edu</a>
                                 </p>
+                                <br/>
                                 <p>
                                     Dr. Brad St.Clair – Co-Principal Investigator<br/>
                                     Research Geneticist, Pacific Northwest Research Station<br/>
                                     USDA Forest Service, Corvallis, Oregon, USA<br/>
                                     <a href="mailto:bstclair@fs.fed.us">bstclair@fs.fed.us</a>
                                 </p>
+                                <br/>
                                 <p>
                                     Nikolas Stevenson-Molnar – Tool Developer<br/>
                                     Software Engineer<br/>
                                     Conservation Biology Institute, Corvallis, Oregon, USA<br/>
                                     <a href="mailto:nik.molnar@consbio.org">nik.molnar@consbio.org</a>
                                 </p>
+                                <br/>
                                 <p>
                                     Ken Ferschweiler – Tool Developer<br/>
                                     Senior Software Architect, Modeler<br/>
                                     Conservation Biology Institute, Corvallis, Oregon, USA<br/>
                                     <a href="mailto:ken@consbio.org">ken@consbio.org</a>
                                 </p>
+                                <br/>
                                 <p>
                                     Bill Klinkow – Tool Developer<br/>
                                     Software Engineer<br/>
                                     Conservation Biology Institute, Corvallis, Oregon, USA<br/>
                                     <a href="mailto:bill.klinkow@consbio.org">bill.klinkow@consbio.org</a>
                                 </p>
+                                <br/>
                                 <p>
                                     Brendan Ward – Project Manager<br/>
                                     Conservation Biologist/GIS Analyst/Software Engineer<br/>
