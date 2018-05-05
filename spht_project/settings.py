@@ -181,3 +181,19 @@ WEBPACK_LOADER = {
 
 if not DEBUG:
     WEBPACK_LOADER['DEFAULT']['BUNDLE_DIR_NAME'] = '/'
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+        },
+    },
+    'loggers': {
+        '': {
+            'handlers': ['console'],
+            'level': 'WARNING',
+        },
+    },
+}
