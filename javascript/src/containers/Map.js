@@ -23,6 +23,7 @@ L.Icon.Default.mergeOptions({
         this.mapNode = null
         this.map = null
         this.pointMarker = null
+        this.previousUrls = []
         this.layers = []
         this.compositeLayer = null
 
@@ -174,8 +175,10 @@ L.Icon.Default.mergeOptions({
         }
     }
 
+
+
     updateCompositeLayer(urls) {
-        if (urls.length === 0) {
+        if ((urls.length === 0) || (JSON.stringify(urls) === JSON.stringify(this.previousUrls))){
             return
         }
         let DivLayer = L.GridLayer.extend({
@@ -245,20 +248,24 @@ L.Icon.Default.mergeOptions({
         if (this.compositeLayer != null) {
             this.map.removeLayer(this.compositeLayer)
         }
+        this.previousUrls = urls
         this.compositeLayer = new DivLayer()
         this.map.addLayer(this.compositeLayer)
         this.compositeLayer.setOpacity(this.props.layerOpacity)
     }
 
-    updateState() {
-        let { point } = this.props
-
-        this.updatePoint(point)
-        // this.updateMapLayers(this.props.layersToDisplay)
-        this.updateCompositeLayer(this.props.layersToDisplay)
+    updateOpacity() {
         if (this.compositeLayer !== null){
            this.compositeLayer.setOpacity(this.props.layerOpacity)
         }
+    }
+
+    updateState() {
+        let { point } = this.props
+        this.updatePoint(point)
+        // this.updateMapLayers(this.props.layersToDisplay)
+        this.updateCompositeLayer(this.props.layersToDisplay)
+        this.updateOpacity()
     }
 
     render() {
