@@ -2,12 +2,11 @@ import asyncio
 from itertools import islice
 
 import aiohttp
-import copy
 import mercantile
+from django.conf import settings
 from django.core.management import BaseCommand
 from ncdjango.models import Service
 from pyproj import Proj
-from django.conf import settings
 
 ZOOM_LEVELS = list(range(7))
 WGS84 = Proj('+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs')
@@ -24,7 +23,10 @@ class Command(BaseCommand):
         except IndexError:
             host = '127.0.0.1'
 
-        headers = {'host': host}
+        headers = {
+            'host': host,
+            'x-forwarded-proto': 'https'
+        }
         await session.get(TILE_URL.format(service=service, z=tile.z, x=tile.x, y=tile.y), headers=headers)
 
     async def fetch_tiles(self, tiles):
