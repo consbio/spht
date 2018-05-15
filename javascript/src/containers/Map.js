@@ -38,7 +38,6 @@ let createDivLayer = urls => L.GridLayer.extend({
         let loaded = 0
         let images = []
         let drawHabitatCanvas = (canvas, m1, m2, op, color) => {
-
             let ctx = canvas.getContext('2d');
             ctx.drawImage(m1, 0, 0)
             ctx.globalCompositeOperation = op
@@ -49,35 +48,36 @@ let createDivLayer = urls => L.GridLayer.extend({
             ctx.fillRect(0, 0, canvas.width, canvas.height)
         }
 
-        urls.forEach((url) => {
-            let img = new Image()
-            img.onload = () => {
-                loaded += 1
-                if (loaded === urls.length) {
-                    if (urls.length !== 2) {
-                        let c = canvases.multiHab
-                        let ctx = c.getContext("2d")
-                        images.forEach((image, i) => {
-                            ctx.globalCompositeOperation = (i === 0 ? "source-out" : "source-in")
-                            ctx.drawImage(image, 0, 0)
-                        })
-                        if (color) {
-                            ctx.globalCompositeOperation = "source-atop" // color existing pixels
-                            ctx.fillStyle = color
-                            ctx.fillRect(0, 0, c.width, c.height)
-                        }
-                    } else {
-                        let historicalMap = images[0] // Current or historical distribution is always first in array
-                        let futureMap = images[1]
-                        drawHabitatCanvas(canvases.lostHab, historicalMap, futureMap, "destination-out", "red");
-                        drawHabitatCanvas(canvases.keptHab, historicalMap, futureMap, "source-in", "green");
-                        drawHabitatCanvas(canvases.newHab, futureMap, historicalMap, "destination-out", "blue");
-                    }
-                }
-            }
-            img.src = `${url}/${coords.z}/${coords.x}/${coords.y}.png`
-            images.push(img)
+        let promises = urls.map(url => {
+            return new Promise(resolve => {
+                let img = new Image()
+                img.onload = () => resolve(img)
+                img.src = `${url}/${coords.z}/${coords.x}/${coords.y}.png`
+            })
         })
+
+        Promise.all(promises).then(images => {
+            if (urls.length !== 2) {
+                let c = canvases.multiHab
+                let ctx = c.getContext("2d")
+                images.forEach((image, i) => {
+                    ctx.globalCompositeOperation = (i === 0 ? "source-out" : "source-in")
+                    ctx.drawImage(image, 0, 0)
+                })
+                if (color) {
+                    ctx.globalCompositeOperation = "source-atop" // color existing pixels
+                    ctx.fillStyle = color
+                    ctx.fillRect(0, 0, c.width, c.height)
+                }
+            } else {
+                let historicalMap = images[0] // Current or historical distribution is always first in array
+                let futureMap = images[1]
+                drawHabitatCanvas(canvases.lostHab, historicalMap, futureMap, "destination-out", "red");
+                drawHabitatCanvas(canvases.keptHab, historicalMap, futureMap, "source-in", "green");
+                drawHabitatCanvas(canvases.newHab, futureMap, historicalMap, "destination-out", "blue");
+            }
+        })
+
         return tile
     }
 })
@@ -89,9 +89,7 @@ let createDivLayer = urls => L.GridLayer.extend({
         this.map = null
         this.pointMarker = null
         this.previousUrls = []
-        this.layers = []
         this.compositeLayer = null
-
     }
 
     componentDidMount() {
@@ -198,31 +196,6 @@ let createDivLayer = urls => L.GridLayer.extend({
         })
     }
 
-    updateLayerUrls(layers) {
-        layers.forEach((layer, i) => {
-            this.layers[i].setUrl(layer + '/{z}/{x}/{y}.png')
-        })
-    }
-
-    updateMapLayers(layers) {
-        let layersNeeded = layers.length - this.layers.length
-
-        if (layersNeeded > 0) {
-            let layersToAdd = this.layers.length + layersNeeded
-            for (let i = this.layers.length; i < layersToAdd; i++) {
-                let layer = L.tileLayer(layers[i], {opacity: 0.5})
-                layer.addTo(this.map)
-                this.layers.push(layer)
-            }
-        } else if (layersNeeded < 0) {
-            for (let i = 0; i < Math.abs(layersNeeded); i++) {
-                let layer = this.layers.pop()
-                this.map.removeLayer(layer)
-            }
-        }
-        this.updateLayerUrls(layers)
-    }
-
     updatePoint(point) {
         let pointIsValid = point !== null && point.x && point.y
 
@@ -263,7 +236,6 @@ let createDivLayer = urls => L.GridLayer.extend({
     updateState() {
         let { point } = this.props
         this.updatePoint(point)
-        // this.updateMapLayers(this.props.layersToDisplay)
         this.updateCompositeLayer(this.props.layersToDisplay)
         this.updateOpacity()
     }
