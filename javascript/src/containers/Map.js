@@ -2,12 +2,14 @@ import React from 'react'
 import { connect } from 'react-redux'
 import { setMapPoint } from '../actions/map'
 import { setLayerOpacity } from '../actions/map'
+import speciesLables from '../species'
 import { Lethargy } from 'lethargy'
 import L from 'leaflet'
 import 'leaflet-basemaps'
 import 'leaflet-zoombox'
 import 'leaflet-geonames/L.Control.Geonames'
 import 'leaflet-range'
+import 'leaflet-html-legend'
 
 /* This is a workaround for a webpack-leaflet incompatibility (https://github.com/PaulLeCam/react-leaflet/issues/255)w */
 delete L.Icon.Default.prototype._getIconUrl;
@@ -82,11 +84,12 @@ let createDivLayer = urls => L.GridLayer.extend({
     }
 })
 
-    class Map extends React.Component {
+class Map extends React.Component {
     constructor(props) {
         super(props)
         this.mapNode = null
         this.map = null
+        this.legendControl = null
         this.pointMarker = null
         this.previousUrls = []
         this.compositeLayer = null
@@ -186,6 +189,9 @@ let createDivLayer = urls => L.GridLayer.extend({
         })
         this.map.addControl(basemapControl)
 
+        this.legendControl = L.control.htmllegend({position: 'bottomright'})
+        this.legendControl.addTo(this.map)
+
         this.map.on('click', e => {
             if (!e.latlng) {
                 return
@@ -233,11 +239,85 @@ let createDivLayer = urls => L.GridLayer.extend({
         }
     }
 
+    updateLegend(layersToDisplay, species, distribution) {
+        if (this.legendControl === null) {
+            return
+        }
+
+        let { options } = this.legendControl
+        let { legends } = options
+
+        if (!layersToDisplay.length && legends.length) {
+            options.legends = []
+            this.legendControl.render()
+        }
+        else if (layersToDisplay) {
+            let legend ={
+                name: speciesLables[species],
+                layer: this.compositeLayer,
+                elements: []
+            }
+
+            let elements
+            let layerCount = layersToDisplay.length
+            if (layerCount === 1) {
+                legend.elements = [{
+                    html: '<div class="legend-square legend-square-green"></div>',
+                    label: distribution.replace('_', '-')
+                }]
+            }
+            else if (layerCount === 2) {
+                legend.elements = [
+                    {
+                        html: '<div class="legend-square legend-square-green"></div>',
+                        label: 'Habitat kept'
+                    },
+                    {
+                        html: '<div class="legend-square legend-square-red"></div>',
+                        label: 'Habitat lost'
+                    },
+                    {
+                        html: '<div class="legend-square legend-square-blue"></div>',
+                        label: 'Habitat gained'
+                    }
+                ]
+            }
+            else {
+                legend.elements = [{
+                    html: '<div class="legend-square legend-square-green"></div>',
+                    label: 'Habitat kept'
+                }]
+            }
+
+            if (legends.length === 0) {
+                legends.push(legend)
+                this.legendControl.render()
+            }
+            else {
+                let oldLegend = legends[0]
+                let isChanged = (
+                    legend.name !== oldLegend.name ||
+                    JSON.stringify(legend.elements) !== JSON.stringify(oldLegend.elements)
+                )
+                if (isChanged) {
+                    legends[0] = legend
+                    this.legendControl.render()
+                }
+                else if (oldLegend.layer !== legend.layer) {
+                    oldLegend.layer = legend.layer
+                    this.legendControl.render()
+                }
+            }
+
+        }
+    }
+
     updateState() {
-        let { point } = this.props
+        let { point, layersToDisplay, species, distribution } = this.props
         this.updatePoint(point)
-        this.updateCompositeLayer(this.props.layersToDisplay)
+        this.updateCompositeLayer(layersToDisplay)
         this.updateOpacity()
+        this.updateLegend(layersToDisplay, species, distribution)
     }
 
     render() {
@@ -252,6 +332,7 @@ let createDivLayer = urls => L.GridLayer.extend({
 
 const mapStateToProps = ({ map, configuration }) => {
     let { point } = map
+    let { species, distribution } = configuration
     let layersToDisplay = []
     let checkLayers = (c) => {
         if (c.species === "none") {
@@ -271,7 +352,9 @@ const mapStateToProps = ({ map, configuration }) => {
     return {
         point,
         layersToDisplay,
-        layerOpacity
+        layerOpacity,
+        species,
+        distribution
     }
 }
 
