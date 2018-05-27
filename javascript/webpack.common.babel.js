@@ -31,7 +31,7 @@ export default {
                 test: /\.(png|gif)$/,
                 loader: 'file-loader',
                 options: {
-                    name: '[path][name].[hash].[ext]'
+                    name: '/static/[path][name].[hash].[ext]'
                 }
             }
         ]
