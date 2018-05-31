@@ -17,11 +17,11 @@ class SpeciesStep extends Component {
                             onChange={(e) => this.props.onChange(e.target.value)}
                         >
                             <option value="none">Select</option>
-                            <option value="pico">Lodgepole Pine</option>
+                            <option value="pico">Lodgepole pine</option>
                             <option value="psme">Douglas-fir</option>
-                            <option value="pisi">Sitka Spruce</option>
-                            <option value="pipo">Ponderosa Pine</option>
-                            <option value="pien">Engelmann Spruce</option>
+                            <option value="pisi">Sitka spruce</option>
+                            <option value="pipo">Ponderosa pine</option>
+                            <option value="pien">Engelmann spruce</option>
                         </select>
                     </div>
                 </div>
