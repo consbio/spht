@@ -30,6 +30,6 @@ class PreviewAccessMiddleware(MiddlewareMixin):
             request.session['authorized_for_preview'] = True
             return HttpResponseRedirect(request.path)
         else:
-            response = render_to_response('preview_login.html', {}, RequestContext(request))
+            response = render_to_response('preview_login.html')
             response.status_code = 401
             return response
