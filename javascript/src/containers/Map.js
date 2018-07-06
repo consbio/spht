@@ -2,7 +2,8 @@ import React from 'react'
 import { connect } from 'react-redux'
 import { setMapPoint } from '../actions/map'
 import { setLayerOpacity } from '../actions/map'
-import speciesLables from '../species'
+import speciesLabels from '../species'
+import colors from '../colors'
 import { Lethargy } from 'lethargy'
 import L from 'leaflet'
 import 'leaflet-basemaps'
@@ -19,7 +20,7 @@ L.Icon.Default.mergeOptions({
   shadowUrl: require('leaflet/dist/images/marker-shadow.png'),
 });
 
-let createDivLayer = urls => L.GridLayer.extend({
+let createDivLayer = (urls, { single, kept, appeared }) => L.GridLayer.extend({
     createTile: function (coords) {
         let tile = L.DomUtil.create('div', 'leaflet-tile')
         let size = this.getTileSize()
@@ -36,20 +37,6 @@ let createDivLayer = urls => L.GridLayer.extend({
             canvases[canvas].height = size.y
         })
 
-        let color = "green"
-        let loaded = 0
-        let images = []
-        let drawHabitatCanvas = (canvas, m1, m2, op, color) => {
-            let ctx = canvas.getContext('2d');
-            ctx.drawImage(m1, 0, 0)
-            ctx.globalCompositeOperation = op
-            ctx.drawImage(m2, 0, 0)
-            // add color
-            ctx.globalCompositeOperation = "source-atop"
-            ctx.fillStyle = color
-            ctx.fillRect(0, 0, canvas.width, canvas.height)
-        }
-
         let promises = urls.map(url => {
             return new Promise(resolve => {
                 let img = new Image()
@@ -59,26 +46,77 @@ let createDivLayer = urls => L.GridLayer.extend({
         })
 
         Promise.all(promises).then(images => {
-            if (urls.length !== 2) {
+            if (images.length === 1) {
                 let c = canvases.multiHab
-                let ctx = c.getContext("2d")
-                images.forEach((image, i) => {
-                    ctx.globalCompositeOperation = (i === 0 ? "source-out" : "source-in")
-                    ctx.drawImage(image, 0, 0)
-                })
-                if (color) {
-                    ctx.globalCompositeOperation = "source-atop" // color existing pixels
-                    ctx.fillStyle = color
-                    ctx.fillRect(0, 0, c.width, c.height)
-                }
-            } else {
-                let historicalMap = images[0] // Current or historical distribution is always first in array
-                let futureMap = images[1]
-                drawHabitatCanvas(canvases.lostHab, historicalMap, futureMap, "destination-out", "red");
-                drawHabitatCanvas(canvases.keptHab, historicalMap, futureMap, "source-in", "green");
-                drawHabitatCanvas(canvases.newHab, futureMap, historicalMap, "destination-out", "blue");
+                let ctx = c.getContext('2d')
+                ctx.globalCompositeOperation = 'source-out'
+                ctx.drawImage(images[0], 0, 0)
+                ctx.globalCompositeOperation = 'source-atop'
+                ctx.fillStyle = single
+                ctx.fillRect(0, 0, c.width, c.height)
             }
-        })
+            else if (images.length > 1) {
+                let keptColors = [...Array(images.length).keys()]
+                    .map(i => kept[Math.ceil(i*kept.length/images.length)])
+                keptColors[keptColors.length-1] = kept[kept.length-1]
+
+                let addedColors = [...Array(images.length).keys()]
+                    .map(i => appeared[Math.ceil(i*appeared.length/images.length)])
+                addedColors[addedColors.length-1] = appeared[appeared.length-1]
+
+                let source = images.shift()
+                let ctx = canvases.multiHab.getContext('2d')
+                ctx.globalCompositeOperation = 'source-out'
+                ctx.drawImage(source, 0, 0)
+                ctx.globalCompositeOperation = 'source-atop'
+                ctx.fillStyle = `rgb(${keptColors[0]})`
+                ctx.fillRect(0, 0, size.x, size.y)
+                let outputImageData = ctx.getImageData(0, 0, size.x, size.y)
+
+                let sourceCanvas = document.createElement('canvas')
+                sourceCanvas.width = size.x
+                sourceCanvas.height = size.y
+                let sourceCtx = sourceCanvas.getContext('2d')
+                sourceCtx.globalCompositeOperation = 'source-over'
+                sourceCtx.drawImage(source, 0, 0)
+                let sourceData = sourceCtx.getImageData(0, 0, sourceCanvas.width, sourceCanvas.height).data
+
+                let layers = images.map(image => {
+                    let canvas = document.createElement('canvas')
+                    canvas.width = size.x
+                    canvas.height = size.y
+                    let ctx = canvas.getContext('2d')
+                    ctx.globalCompositeOperation = 'source-over'
+                    ctx.drawImage(image, 0, 0)
+                    return [canvas, ctx.getImageData(0, 0, canvas.width, canvas.height).data]
+                })
+
+                let data = outputImageData.data
+
+                for(let i = 3, len = data.length; i < len; i += 4) {
+                    let colors
+                    if (sourceData[i] > 0) {
+                        colors = keptColors
+                    }
+                    else {
+                        colors = addedColors
+                    }
+
+                    let count = 0
+                    for (let j = 0; j < layers.length; j++) {
+                        if (layers[j][1][i] > 0) {
+                            count++
+                        }
+                    }
+
+                    if (count > 0) {
+                        data.set([...colors[count], 255], i-3)
+                    }
+                }
+
+                ctx.putImageData(outputImageData, 0, 0)
+            }
+        }).catch(err => console.log(err))
 
         return tile
     }
@@ -93,6 +131,7 @@ class Map extends React.Component {
         this.pointMarker = null
         this.previousUrls = []
         this.compositeLayer = null
+        this.colorScheme = null
     }
 
     componentDidMount() {
@@ -219,11 +258,16 @@ class Map extends React.Component {
         }
     }
 
-    updateCompositeLayer(urls) {
-        if ((urls.length === 0) || (JSON.stringify(urls) === JSON.stringify(this.previousUrls))){
+    updateCompositeLayer(urls, colorScheme) {
+        const isUnchanged = (
+            urls.length === 0 || (JSON.stringify(urls) === JSON.stringify(this.previousUrls) &&
+            this.colorScheme === colorScheme)
+        )
+
+        if (isUnchanged) {
             return
         }
-        let DivLayer = createDivLayer(urls)
+        let DivLayer = createDivLayer(urls, colorScheme)
         if (this.compositeLayer != null) {
             this.map.removeLayer(this.compositeLayer)
         }
@@ -231,6 +275,7 @@ class Map extends React.Component {
         this.compositeLayer = new DivLayer()
         this.map.addLayer(this.compositeLayer)
         this.compositeLayer.setOpacity(this.props.layerOpacity)
+        this.colorScheme = colorScheme
     }
 
     updateOpacity() {
@@ -253,7 +298,7 @@ class Map extends React.Component {
         }
         else if (layersToDisplay) {
             let legend ={
-                name: speciesLables[species],
+                name: speciesLabels[species],
                 layer: this.compositeLayer,
                 elements: []
             }
@@ -313,9 +358,9 @@ class Map extends React.Component {
     }
 
     updateState() {
-        let { point, layersToDisplay, species, distribution } = this.props
+        let { point, layersToDisplay, species, distribution, colorScheme } = this.props
         this.updatePoint(point)
-        this.updateCompositeLayer(layersToDisplay)
+        this.updateCompositeLayer(layersToDisplay, colorScheme)
         this.updateOpacity()
         this.updateLegend(layersToDisplay, species, distribution)
     }
@@ -330,9 +375,10 @@ class Map extends React.Component {
 }
 
 
-const mapStateToProps = ({ map, configuration }) => {
+const mapStateToProps = ({ map, configuration, advanced }) => {
     let { point } = map
     let { species, distribution } = configuration
+
     let layersToDisplay = []
     let checkLayers = (c) => {
         if (c.species === "none") {
@@ -354,7 +400,8 @@ const mapStateToProps = ({ map, configuration }) => {
         layersToDisplay,
         layerOpacity,
         species,
-        distribution
+        distribution,
+        colorScheme: colors[advanced.colorScheme]
     }
 }
 

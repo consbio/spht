@@ -1,7 +1,9 @@
 import React, { Component } from 'react'
 import Tool from './Tool'
 import About from './About'
+import Advanced from '../containers/Advanced'
 
+const showAdvancedTab = true
 
 class Sidebar extends Component {
     constructor(props) {
@@ -21,6 +23,12 @@ class Sidebar extends Component {
                         <li className={activeTab === 'tool' ? 'is-active' : (activeTab === 'map' ? 'is-active-tablet' : null)}>
                             <a onClick={(e) => this.setState({activeTab: "tool"})}>Tool</a>
                         </li>
+                        {showAdvancedTab ?
+                            <li className={activeTab === 'advanced' ? 'is-active' : null}>
+                                <a onClick={() => this.setState({activeTab: 'advanced'})}>Advanced</a>
+                            </li>
+                            : null
+                        }
                         <li className={(activeTab === 'map' ? 'is-active' : null) + ' is-hidden-tablet'}>
                             <a onClick={(e) => this.setState({activeTab: "map"})}>Map</a>
                         </li>
@@ -33,6 +41,9 @@ class Sidebar extends Component {
                     'tab-content ' + (activeTab === 'map' ? 'is-hidden-mobile' : activeTab !== 'tool' ? 'is-hidden' : '')
                 }>
                     <Tool />
+                </div>
+                <div className={'tab-content ' + (activeTab !== 'advanced' ? 'is-hidden' : '')}>
+                    <Advanced />
                 </div>
             </div>
         )
