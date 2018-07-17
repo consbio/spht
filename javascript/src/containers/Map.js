@@ -10,7 +10,7 @@ import 'leaflet-basemaps'
 import 'leaflet-zoombox'
 import 'leaflet-geonames/L.Control.Geonames'
 import 'leaflet-range'
-import 'leaflet-html-legend'
+import 'leaflet-html-legend/src/L.Control.HtmlLegend'
 
 /* This is a workaround for a webpack-leaflet incompatibility (https://github.com/PaulLeCam/react-leaflet/issues/255)w */
 delete L.Icon.Default.prototype._getIconUrl;
@@ -20,7 +20,13 @@ L.Icon.Default.mergeOptions({
   shadowUrl: require('leaflet/dist/images/marker-shadow.png'),
 });
 
-let createDivLayer = (urls, { single, kept, appeared }) => L.GridLayer.extend({
+const getColors = (ramp, layerCount) => {
+    let colors = [...Array(layerCount).keys()].map(i => ramp[Math.ceil(i*ramp.length/layerCount)])
+    colors[colors.length-1] = ramp[ramp.length-1]
+    return colors
+}
+
+const createDivLayer = (urls, { single, kept, appeared }) => L.GridLayer.extend({
     createTile: function (coords) {
         let tile = L.DomUtil.create('div', 'leaflet-tile')
         let size = this.getTileSize()
@@ -56,13 +62,8 @@ let createDivLayer = (urls, { single, kept, appeared }) => L.GridLayer.extend({
                 ctx.fillRect(0, 0, c.width, c.height)
             }
             else if (images.length > 1) {
-                let keptColors = [...Array(images.length).keys()]
-                    .map(i => kept[Math.ceil(i*kept.length/images.length)])
-                keptColors[keptColors.length-1] = kept[kept.length-1]
-
-                let addedColors = [...Array(images.length).keys()]
-                    .map(i => appeared[Math.ceil(i*appeared.length/images.length)])
-                addedColors[addedColors.length-1] = appeared[appeared.length-1]
+                let keptColors = getColors(kept, images.length)
+                let addedColors = getColors(appeared, images.length)
 
                 let source = images.shift()
                 let ctx = canvases.multiHab.getContext('2d')
@@ -228,7 +229,7 @@ class Map extends React.Component {
         })
         this.map.addControl(basemapControl)
 
-        this.legendControl = L.control.htmllegend({position: 'bottomright'})
+        this.legendControl = L.control.htmllegend({position: 'bottomright', disableVisibilityControls: true})
         this.legendControl.addTo(this.map)
 
         this.map.on('click', e => {
@@ -284,7 +285,7 @@ class Map extends React.Component {
         }
     }
 
-    updateLegend(layersToDisplay, species, distribution) {
+    updateLegend(layersToDisplay, species, distribution, {single, kept, appeared}) {
         if (this.legendControl === null) {
             return
         }
@@ -303,35 +304,33 @@ class Map extends React.Component {
                 elements: []
             }
 
-            let elements
             let layerCount = layersToDisplay.length
+            let keptColors = getColors(kept, layerCount).map(color => 'rgb(' + color.join(',') + ')')
+            let addedColors = getColors(appeared, layerCount).map(color => 'rgb(' + color.join(',') + ')')
+
             if (layerCount === 1) {
                 legend.elements = [{
-                    html: '<div class="legend-square legend-square-green"></div>',
+                    html: `<div class="legend-square" style="background-color: ${keptColors[keptColors.length-1]}"></div>`,
                     label: distribution.replace('_', '-')
                 }]
             }
-            else if (layerCount === 2) {
-                legend.elements = [
-                    {
-                        html: '<div class="legend-square legend-square-green"></div>',
-                        label: 'Habitat kept'
-                    },
-                    {
-                        html: '<div class="legend-square legend-square-red"></div>',
-                        label: 'Habitat lost'
-                    },
-                    {
-                        html: '<div class="legend-square legend-square-blue"></div>',
-                        label: 'Habitat gained'
+            else if (layerCount > 1) {
+                legend.elements[0] = {
+                    html: `<div class="legend-square" style="background-color: ${keptColors[0]}"></div>`,
+                    label: 'Habitat lost'
+                }
+                legend.elements.push(...keptColors.slice(1).map((color, i) => {
+                    return {
+                        html: `<div class="legend-square" style="background-color: ${color}"></div>`,
+                        label: `Habitat kept (${i+1} scenario${i > 0 ? 's' : ''})`
                     }
-                ]
-            }
-            else {
-                legend.elements = [{
-                    html: '<div class="legend-square legend-square-green"></div>',
-                    label: 'Habitat kept'
-                }]
+                }))
+                legend.elements.push(...addedColors.slice(1).map((color, i) => {
+                   return {
+                       html: `<div class="legend-square" style="background-color: ${color}"></div>`,
+                       label: `Habitat gained (${i+1} scenario${i > 0 ? 's' : ''})`
+                   }
+                }))
             }
 
             if (legends.length === 0) {
@@ -362,7 +361,7 @@ class Map extends React.Component {
         this.updatePoint(point)
         this.updateCompositeLayer(layersToDisplay, colorScheme)
         this.updateOpacity()
-        this.updateLegend(layersToDisplay, species, distribution)
+        this.updateLegend(layersToDisplay, species, distribution, colorScheme)
     }
 
     render() {

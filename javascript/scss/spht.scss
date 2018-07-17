@@ -174,11 +174,3 @@ em {
   width: 10px;
   height: 10px;
 }
-
-$legend-colors: ("red": red, "green": green, "blue": blue);
-
-@each $legend-color-name, $legend-color in $legend-colors {
-  .legend-square-#{$legend-color-name} {
-    background-color: #{$legend-color};
-  }
-}
