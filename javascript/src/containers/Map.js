@@ -30,18 +30,9 @@ const createDivLayer = (urls, { single, kept, appeared }) => L.GridLayer.extend(
     createTile: function (coords) {
         let tile = L.DomUtil.create('div', 'leaflet-tile')
         let size = this.getTileSize()
-        let canvases = {
-            multiHab: null,
-            lostHab: null,
-            keptHab: null,
-            newHab: null
-        }
-
-        Object.keys(canvases).forEach((canvas) => {
-            canvases[canvas] = L.DomUtil.create('canvas', 'habitat-canvas', tile)
-            canvases[canvas].width = size.x
-            canvases[canvas].height = size.y
-        })
+        let canvas = L.DomUtil.create('canvas', 'habitat-canvas', tile)
+        canvas.width = size.x
+        canvas.height = size.y
 
         let promises = urls.map(url => {
             return new Promise(resolve => {
@@ -53,7 +44,7 @@ const createDivLayer = (urls, { single, kept, appeared }) => L.GridLayer.extend(
 
         Promise.all(promises).then(images => {
             if (images.length === 1) {
-                let c = canvases.multiHab
+                let c = canvas
                 let ctx = c.getContext('2d')
                 ctx.globalCompositeOperation = 'source-out'
                 ctx.drawImage(images[0], 0, 0)
@@ -66,7 +57,7 @@ const createDivLayer = (urls, { single, kept, appeared }) => L.GridLayer.extend(
                 let addedColors = getColors(appeared, images.length)
 
                 let source = images.shift()
-                let ctx = canvases.multiHab.getContext('2d')
+                let ctx = canvas.getContext('2d')
                 ctx.globalCompositeOperation = 'source-out'
                 ctx.drawImage(source, 0, 0)
                 ctx.globalCompositeOperation = 'source-atop'
