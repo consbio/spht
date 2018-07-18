@@ -6,12 +6,12 @@ import speciesLabels from '../../species'
 import colors from '../../colors'
 import { Lethargy } from 'lethargy'
 import L from 'leaflet'
-import HabitatLayer, { getColors } from './L.HabitatLayer'
 import 'leaflet-basemaps'
 import 'leaflet-zoombox'
 import 'leaflet-geonames/L.Control.Geonames'
 import 'leaflet-range'
 import 'leaflet-html-legend'
+import HabitatLayer, { getColors } from './HabitatLayer'
 
 /* This is a workaround for a webpack-leaflet incompatibility (https://github.com/PaulLeCam/react-leaflet/issues/255)w */
 delete L.Icon.Default.prototype._getIconUrl;

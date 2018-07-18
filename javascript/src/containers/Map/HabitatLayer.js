@@ -1,4 +1,4 @@
-import { GridLayer } from "leaflet"
+import L, { GridLayer } from "leaflet"
 
 export const getColors = (ramp, layerCount) => {
     let colors = [...Array(layerCount).keys()].map(i => ramp[Math.ceil(i*ramp.length/layerCount)])
