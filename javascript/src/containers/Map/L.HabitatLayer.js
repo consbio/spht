@@ -1,6 +1,4 @@
-import "leaflet"
-
-const L = window.L
+import { GridLayer } from "leaflet"
 
 export const getColors = (ramp, layerCount) => {
     let colors = [...Array(layerCount).keys()].map(i => ramp[Math.ceil(i*ramp.length/layerCount)])
@@ -8,7 +6,7 @@ export const getColors = (ramp, layerCount) => {
     return colors
 }
 
-const HabitatLayer = L.GridLayer.extend({
+const HabitatLayer = GridLayer.extend({
     urls: [],
     colorScheme: null,
 
