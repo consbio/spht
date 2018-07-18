@@ -11,7 +11,7 @@ import 'leaflet-basemaps'
 import 'leaflet-zoombox'
 import 'leaflet-geonames/L.Control.Geonames'
 import 'leaflet-range'
-import 'leaflet-html-legend/src/L.Control.HtmlLegend'
+import 'leaflet-html-legend'
 
 /* This is a workaround for a webpack-leaflet incompatibility (https://github.com/PaulLeCam/react-leaflet/issues/255)w */
 delete L.Icon.Default.prototype._getIconUrl;
