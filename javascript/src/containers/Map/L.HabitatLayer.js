@@ -1,4 +1,6 @@
-import L from "leaflet"
+import "leaflet"
+
+const L = window.L
 
 export const getColors = (ramp, layerCount) => {
     let colors = [...Array(layerCount).keys()].map(i => ramp[Math.ceil(i*ramp.length/layerCount)])
