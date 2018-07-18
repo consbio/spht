@@ -6,7 +6,7 @@ export const getColors = (ramp, layerCount) => {
     return colors
 }
 
-L.HabitatLayer = L.GridLayer.extend({
+const HabitatLayer = L.GridLayer.extend({
     urls: [],
     colorScheme: null,
 
@@ -111,4 +111,4 @@ L.HabitatLayer = L.GridLayer.extend({
     }
 })
 
-export default L.HabitatLayer
+export default HabitatLayer
