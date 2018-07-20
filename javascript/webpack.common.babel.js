@@ -5,6 +5,7 @@ import BundleTracker from "webpack-bundle-tracker"
 export default {
     context: __dirname,
     entry: [
+        'babel-polyfill',
         './src/index',
         './scss/spht.scss'
     ],
