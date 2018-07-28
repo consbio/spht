@@ -8,6 +8,7 @@
     {% render_bundle 'main' 'css' %}
 </head>
 <body>
+    {% csrf_token %}
     <div id="app"></div>
     {% if not debug %}
         {% render_bundle 'vendor' 'js' %}

@@ -3,7 +3,7 @@
 $primary: $blue;
 $sidebar-width: 440px;
 $header-height: 52px;
-$tab-header-height: 58px;
+$tab-header-height: calc(42px + 1.5rem);
 $tab-content-height: calc(100vh - #{$header-height} - #{$tab-header-height});
 $family-strong: "Arial Black", "Arial Bold", Gadget, sans-serif;
 
@@ -14,6 +14,7 @@ $family-strong: "Arial Black", "Arial Bold", Gadget, sans-serif;
 @import '~leaflet-geonames/L.Control.Geonames.css';
 @import '~leaflet-range/L.Control.Range.css';
 @import '~leaflet-html-legend/dist/L.Control.HtmlLegend.css';
+@import '~bulma-pageloader';
 
 @mixin ios-mobile-portrait {
   @media only screen
@@ -113,6 +114,18 @@ $family-strong: "Arial Black", "Arial Bold", Gadget, sans-serif;
   z-index: 1;
 }
 
+.preview-map {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+}
+
+.preview-map-container {
+  width: 645px;
+  height: 430px;
+}
+
 .modeling-table {
   position: relative;
   left: -1.5em;
@@ -154,10 +167,6 @@ em {
   }
 }
 
-.modal-content {
-  display: none;
-}
-
 .tooltip {
   max-width: 400px;
 }
@@ -173,4 +182,26 @@ em {
 .legend-square {
   width: 10px;
   height: 10px;
+}
+
+.justify-right {
+  justify-content: flex-end;
+}
+
+.pdf-preview .modal-card-body {
+  width: 645px;
+  height: 430px;
+  padding: 0;
+}
+
+.pageloader {
+  position: absolute !important;
+  top: 65px;
+  bottom: 77px;
+  background-color: $primary;
+}
+
+.error-debug-info {
+  max-height: 200px;
+  overflow: auto;
 }

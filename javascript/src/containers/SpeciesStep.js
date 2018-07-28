@@ -13,7 +13,7 @@ class SpeciesStep extends Component {
                 <div className="step-content">
                     <div className="select">
                         <select
-                            value={species}
+                            value={species || "none"}
                             onChange={(e) => this.props.onChange(e.target.value)}
                         >
                             <option value="none">Select</option>

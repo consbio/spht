@@ -10,3 +10,4 @@ javascript/build/
 webpack-stats\.json
 config.json
 data/
+media/

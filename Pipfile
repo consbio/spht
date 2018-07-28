@@ -6,16 +6,20 @@ verify_ssl = true
 [dev-packages]
 
 [packages]
-django = "==1.11.12"
-gdal = "==2.2.4"
-numpy = "==1.14.2"
-ncdjango = "==0.5.1"
-django-webpack-loader = "==0.6.0"
-psycopg2-binary = "==2.7.4"
-mercantile = "==1.0.1"
+django = "==1.11.*"
+gdal = "==2.2.*"
+numpy = "==1.14.*"
+ncdjango = "==0.5.*"
+django-webpack-loader = "==0.6.*"
+psycopg2-binary = "==2.7.*"
+mercantile = "==1.0.*"
 clover = { git = 'https://github.com/consbio/clover.git' }
 pyproj = "*"
-aiohttp = "*"
+aiohttp = "==3.1.*"
+djangorestframework = "==3.8.*"
+django-celery-results = "*"
+weasyprint = "==0.42.*"
+geopy = "*"
 
 [requires]
 python_version = "3.6"

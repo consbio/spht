@@ -1,10 +1,14 @@
-import { createStore, combineReducers } from 'redux'
+import { combineReducers } from 'redux'
 import map from './map'
 import configuration from './runConfiguration'
 import advanced from './advanced'
+import report from './report'
+import error from './error'
 
-export default createStore(combineReducers({
+export default combineReducers({
     map,
     configuration,
-    advanced
-}))
+    advanced,
+    report,
+    error
+})

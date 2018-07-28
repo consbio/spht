@@ -61,6 +61,7 @@ INSTALLED_APPS = [
 
     'ncdjango',
     'webpack_loader',
+    'django_celery_results',
 
     'spht',
 
@@ -159,6 +160,9 @@ STATICFILES_DIRS = (
     os.path.join(BASE_DIR, 'javascript/build'),
 )
 
+MEDIA_ROOT = CONFIG.get('media-root', os.path.join(BASE_DIR, 'media'))
+MEDIA_URL = CONFIG.get('media-url', '/media/')
+
 NC_SERVICE_DATA_ROOT = CONFIG.get('data_root', 'data/ncdjango/services')
 
 NC_INSTALLED_INTERFACES = (
@@ -167,6 +171,13 @@ NC_INSTALLED_INTERFACES = (
     'ncdjango.interfaces.arcgis',
     'interfaces.tiles'
 )
+
+NC_REGISTERED_JOBS = {
+    'create_report': {
+        'type': 'task',
+        'task': 'spht.jobs.ReportTask'
+    }
+}
 
 WEBPACK_LOADER = {
     'DEFAULT': {
@@ -197,3 +208,6 @@ LOGGING = {
         },
     },
 }
+
+CELERY_TRACK_TASK_STARTED = True
+CELERY_RESULT_BACKEND = 'django-db'

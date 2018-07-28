@@ -1,6 +1,6 @@
 import React from 'react'
 import { connect } from 'react-redux'
-import { setMapPoint } from '../../actions/map'
+import { setMapCenter, setMapZoom, setMapPoint, setBasemap } from '../../actions/map'
 import { setLayerOpacity } from '../../actions/map'
 import speciesLabels from '../../species'
 import colors from '../../colors'
@@ -12,6 +12,7 @@ import 'leaflet-geonames/L.Control.Geonames'
 import 'leaflet-range'
 import 'leaflet-html-legend'
 import HabitatLayer, { getColors } from './HabitatLayer'
+import { getLayerURLs } from "../../utils"
 
 /* This is a workaround for a webpack-leaflet incompatibility (https://github.com/PaulLeCam/react-leaflet/issues/255)w */
 delete L.Icon.Default.prototype._getIconUrl;
@@ -26,6 +27,7 @@ class Map extends React.Component {
         super(props)
         this.mapNode = null
         this.map = null
+        this.mapIsMoving = false
         this.legendControl = null
         this.pointMarker = null
         this.previousUrls = []
@@ -59,6 +61,23 @@ class Map extends React.Component {
             maxZoom: 13
         })
 
+        this.map.on('moveend', event => {
+            this.mapIsMoving = false
+            setTimeout(function() {
+                if (!this.mapIsMoving) {
+                    this.props.onMapMove(this.map.getCenter())
+                }
+            }.bind(this), 1)
+        })
+
+        this.map.on('movestart', event => {
+            this.mapIsMoving = true;
+        })
+
+        this.map.on('zoomend', () => {
+            this.props.onMapZoom(this.map.getZoom())
+        })
+
         this.map.zoomControl.setPosition('topright')
         this.map.addControl(L.control.zoomBox({
             position: 'topright'
@@ -86,7 +105,7 @@ class Map extends React.Component {
             orient: 'vertical',
         })
         opacityControl.on('input change', (e) => {
-            this.props.onSetOpacity(e.value)
+            this.props.onSetOpacity(parseFloat(e.value))
         })
         this.map.addControl(opacityControl)
 
@@ -126,6 +145,7 @@ class Map extends React.Component {
             position: 'bottomleft'
         })
         this.map.addControl(basemapControl)
+        this.map.on('baselayerchange', basemap => this.props.onBasemapChange(basemap))
 
         this.legendControl = L.control.htmllegend({position: 'bottomright', disableVisibilityControls: true})
         this.legendControl.addTo(this.map)
@@ -138,6 +158,22 @@ class Map extends React.Component {
             let { lng, lat } = e.latlng
             this.props.onSetPoint(lng, lat)
         })
+    }
+
+    updateMap(center, zoom) {
+        if (this.map === null) {
+            return
+        }
+
+        let mapCenter = this.map.getCenter()
+        let mapZoom = this.map.getZoom()
+
+        if (!this.mapIsMoving && (mapCenter.lng !== center[0] || mapCenter.lat !== center[1])) {
+            this.map.setView(center, zoom)
+        }
+        else if (mapZoom !== zoom) {
+            this.map.setZoom(zoom)
+        }
     }
 
     updatePoint(point) {
@@ -263,7 +299,12 @@ class Map extends React.Component {
     }
 
     updateState() {
-        let { point, layersToDisplay, species, distribution, colorScheme, layerOpacity } = this.props
+        if (this.map === null) {
+            return
+        }
+
+        let { center, zoom, point, layersToDisplay, species, distribution, colorScheme, layerOpacity } = this.props
+        this.updateMap(center, zoom)
         this.updatePoint(point)
         this.updateCompositeLayer(layersToDisplay, colorScheme, layerOpacity)
         this.updateOpacity()
@@ -281,26 +322,15 @@ class Map extends React.Component {
 
 
 const mapStateToProps = ({ map, configuration, advanced }) => {
-    let { point } = map
-    let { species, distribution } = configuration
-
-    let layersToDisplay = []
-    let checkLayers = (c) => {
-        if (c.species === "none") {
-            return
-        }
-        layersToDisplay.push(`/tiles/${c.species}_p${c.distribution}_800m_pa`)
-        Object.keys(c.model).forEach((rcp_year) => {
-            if (c.model[rcp_year]) {
-                layersToDisplay.push(`/tiles/${c.species}_15gcm_${rcp_year}_pa`)
-            }
-        })
-    }
-    checkLayers(configuration)
-
+    let { center, zoom, point } = map
+    let { species, distribution, model } = configuration
     let { layerOpacity } = map
 
+    let layersToDisplay = getLayerURLs(species, distribution, model)
+
     return {
+        center,
+        zoom,
         point,
         layersToDisplay,
         layerOpacity,
@@ -317,6 +347,16 @@ const mapDispatchToProps = dispatch => {
         },
         onSetOpacity: (opacity) => {
             dispatch(setLayerOpacity(opacity))
+        },
+        onMapMove: center => {
+            let { lat, lng } = center
+            dispatch(setMapCenter([lat, lng]))
+        },
+        onMapZoom: zoom => {
+            dispatch(setMapZoom(zoom))
+        },
+        onBasemapChange: ({ _url, options }) => {
+            dispatch(setBasemap({url: _url, options}))
         }
     }
 }
