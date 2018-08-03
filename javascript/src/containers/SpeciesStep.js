@@ -14,7 +14,13 @@ class SpeciesStep extends Component {
                     <div className="select">
                         <select
                             value={species || "none"}
-                            onChange={(e) => this.props.onChange(e.target.value)}
+                            onChange={(e) => {
+                                let value = e.target.value
+                                if (value === "none") {
+                                    value = null
+                                }
+                                this.props.onChange(value)
+                            }}
                         >
                             <option value="none">Select</option>
                             <option value="pico">Lodgepole pine</option>

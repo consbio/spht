@@ -35,13 +35,14 @@ class DownloadStep extends Component {
                     </ReactTooltip>
                     <em>Download results to a pdf</em>
                     <div>&nbsp;</div>
-                    <a
+                    <button
+                        disabled={species === null}
                         className="button"
                         onClick={() => {
                             this.setState({ showModal: true })
                             this.config.refresh()
                         }}
-                    >Download</a>
+                    >Download</button>
                     <div>&nbsp;</div>
                 </div>
                 <ModalCard
