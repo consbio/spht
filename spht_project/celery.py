@@ -14,3 +14,5 @@ app.config_from_object('django.conf:settings', namespace='CELERY')
 
 # Load task modules from all registered Django app configs.
 app.autodiscover_tasks()
+
+app.loader.override_backends['django-db'] = 'django_celery_results.backends.database:DatabaseBackend'
