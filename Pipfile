@@ -6,7 +6,7 @@ verify_ssl = true
 [dev-packages]
 
 [packages]
-django = "==1.11.*"
+django = ">=1.11.23,<1.12"
 gdal = "==2.2.*"
 numpy = "==1.14.*"
 ncdjango = "==0.5.*"
