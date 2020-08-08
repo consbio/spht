@@ -28,6 +28,8 @@ class SpeciesStep extends Component {
                             <option value="pisi">Sitka spruce</option>
                             <option value="pipo">Ponderosa pine</option>
                             <option value="pien">Engelmann spruce</option>
+                            <option value="lariocc">Western larch</option>
+                            <option value="pinumon">Western white pine</option>
                         </select>
                     </div>
                 </div>

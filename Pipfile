@@ -8,18 +8,19 @@ verify_ssl = true
 [packages]
 django = ">=1.11.23,<1.12"
 gdal = "==2.2.*"
-numpy = "==1.14.*"
-ncdjango = "==0.5.*"
+ncdjango = "==0.5.2"
 django-webpack-loader = "==0.6.*"
 psycopg2-binary = "==2.7.*"
 mercantile = "==1.0.*"
-clover = { git = 'https://github.com/consbio/clover.git' }
-pyproj = "*"
 aiohttp = "==3.1.*"
 djangorestframework = "==3.8.*"
 django-celery-results = "*"
 weasyprint = "==0.42.*"
 geopy = "*"
+trefoil = "*"
+setuptools = "*"
+numpy = "*"
+pyproj = "==1.9.6"
 
 [requires]
 python_version = "3.6"
