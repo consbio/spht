@@ -38,7 +38,9 @@ SPECIES_LABELS = {
     'pisi': 'Sitka Spruce',
     'psme': 'Douglas-fir',
     'pipo': 'Ponderosa Pine',
-    'pien': 'Engelmann Spruce'
+    'pien': 'Engelmann Spruce',
+    'lariocc': 'Western larch',
+    'pinumon': 'Western white pine'
 }
 
 RCP_LABELS = {
