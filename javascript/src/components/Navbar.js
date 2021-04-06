@@ -137,7 +137,7 @@ class Navbar extends React.Component {
                             >
                                 People
                             </a>
-                            <a className="navbar-item" href="#">
+                            <a className="navbar-item" href="https://github.com/consbio/spht/">
                                 Source Code
                             </a>
                         </div>
