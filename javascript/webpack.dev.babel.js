@@ -3,19 +3,17 @@ import merge from 'webpack-merge'
 import common from './webpack.common.babel.js'
 
 export default merge(common, {
-    entry: [
-        'webpack-dev-server/client?http://localhost:3000',
-        'webpack/hot/only-dev-server'
-    ],
+    mode: 'development',
     devServer: {
-        contentBase: './',
-        hot: true,
+        hot: false,
         host: '127.0.0.1',
         port: 3000,
-        inline: true,
-        publicPath: '/assets/bundles/',
-        stats: ['minimal', 'color'],
-        headers: { "Access-Control-Allow-Origin": "*" }
+        headers: { "Access-Control-Allow-Origin": "*" },
+        devMiddleware: {
+          index: true,
+          publicPath: 'http://127.0.0.1:3000/assets/bundles/',
+        },
+        allowedHosts: "all",
     },
     output: {
         path: path.resolve(__dirname, 'webpack_bundles'),

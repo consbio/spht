@@ -1,5 +1,5 @@
 import path from 'path'
-import ExtractTextPlugin from 'extract-text-webpack-plugin'
+import MiniCssExtractPlugin from 'mini-css-extract-plugin'
 import BundleTracker from "webpack-bundle-tracker"
 
 export default {
@@ -10,29 +10,34 @@ export default {
         './scss/spht.scss'
     ],
     plugins: [
-        new BundleTracker({filename: '../webpack-stats.json'}),
-        new ExtractTextPlugin({filename: '[name].bundle.css'})
+        new BundleTracker(
+    {
+                path: path.resolve('../' ),
+                filename: 'webpack-stats.json',
+            }
+        ),
+        new MiniCssExtractPlugin({filename: '[name].bundle.css'})
     ],
     module: {
         rules: [
             {
                 test: /\.js$/,
                 include: path.resolve('./src'),
-                loader: 'babel-loader',
-                query: {presets: ['es2015', 'react']}
+                use: [
+                    {
+                        loader: 'babel-loader',
+                    }
+                ]
             },
             {
                 test: /\.scss$/,
-                use: ExtractTextPlugin.extract({
-                    fallback: 'style-loader',
-                    use: ['css-loader', 'sass-loader']
-                })
+                use: [MiniCssExtractPlugin.loader, 'css-loader', 'sass-loader'],
             },
             {
                 test: /\.(png|gif)$/,
-                loader: 'file-loader',
-                options: {
-                    name: '/static/[path][name].[hash].[ext]'
+                type: 'asset/resource',
+                generator: {
+                    filename: '[path][name].[hash].[ext]'
                 }
             }
         ]

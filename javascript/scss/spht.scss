@@ -14,7 +14,6 @@ $family-strong: "Arial Black", "Arial Bold", Gadget, sans-serif;
 @import '~leaflet-geonames/L.Control.Geonames.css';
 @import '~leaflet-range/L.Control.Range.css';
 @import '~leaflet-html-legend/dist/L.Control.HtmlLegend.css';
-@import '~bulma-pageloader';
 
 @mixin ios-mobile-portrait {
   @media only screen

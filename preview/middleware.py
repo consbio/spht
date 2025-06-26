@@ -1,7 +1,6 @@
 from django.conf import settings
 from django.http import HttpResponseRedirect
-from django.shortcuts import render_to_response
-from django.template import RequestContext
+from django.shortcuts import render
 from django.utils.timezone import now
 from django.utils.deprecation import MiddlewareMixin
 
@@ -30,6 +29,4 @@ class PreviewAccessMiddleware(MiddlewareMixin):
             request.session['authorized_for_preview'] = True
             return HttpResponseRedirect(request.path)
         else:
-            response = render_to_response('preview_login.html')
-            response.status_code = 401
-            return response
+            return render(request, 'preview_login.html', status=401)
