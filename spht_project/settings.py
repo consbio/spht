@@ -1,4 +1,3 @@
-
 """
 Django settings for spht project.
 
@@ -27,89 +26,91 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # See https://docs.djangoproject.com/en/1.11/howto/deployment/checklist/
 
 CONFIG = {}
-config_file = os.environ.get('SPHT_CONF_FILE') or os.path.join(BASE_DIR, 'config.json')
+config_file = os.environ.get("SPHT_CONF_FILE") or os.path.join(BASE_DIR, "config.json")
 if config_file and os.path.isfile(config_file):
     with open(config_file) as f:
         CONFIG = json.loads(f.read())
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = CONFIG.get(
-        'django_secret_key', ''.join(
-                [random.SystemRandom().choice(string.ascii_letters + string.digits) for _ in range(50)]
-        ))  # This results in a random secret key every time the settings are loaded. Not appropriate for production.
+    "django_secret_key",
+    "".join(
+        [
+            random.SystemRandom().choice(string.ascii_letters + string.digits)
+            for _ in range(50)
+        ]
+    ),
+)  # This results in a random secret key every time the settings are loaded. Not appropriate for production.
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = CONFIG.get('debug', True)
+DEBUG = CONFIG.get("debug", True)
 
-INTERNAL_IPS = CONFIG.get('internal_ips', ['127.0.0.1'])
+INTERNAL_IPS = CONFIG.get("internal_ips", ["127.0.0.1"])
 
-ALLOWED_HOSTS = CONFIG.get('allowed_hosts', [])
+ALLOWED_HOSTS = CONFIG.get("allowed_hosts", [])
 
-PREVIEW_MODE = CONFIG.get('preview_mode', False)
-PREVIEW_PASSWORD = 'sphtearlyaccess'
-PREVIEW_EXPIRES = datetime.datetime(2019, 9, 23, tzinfo=pytz.timezone('US/Pacific'))
+PREVIEW_MODE = CONFIG.get("preview_mode", False)
+PREVIEW_PASSWORD = "sphtearlyaccess"
+PREVIEW_EXPIRES = datetime.datetime(2019, 9, 23, tzinfo=pytz.timezone("US/Pacific"))
 
 # Application definition
 
 INSTALLED_APPS = [
-    'django.contrib.admin',
-    'django.contrib.auth',
-    'django.contrib.contenttypes',
-    'django.contrib.sessions',
-    'django.contrib.messages',
-    'django.contrib.staticfiles',
-
-    'ncdjango',
-    'webpack_loader',
-    'django_celery_results',
-
-    'spht',
-
-    'preview'
+    "django.contrib.admin",
+    "django.contrib.auth",
+    "django.contrib.contenttypes",
+    "django.contrib.sessions",
+    "django.contrib.messages",
+    "django.contrib.staticfiles",
+    "ncdjango",
+    "webpack_loader",
+    "django_celery_results",
+    "spht",
+    "preview",
 ]
 
 MIDDLEWARE = [
-    'django.middleware.security.SecurityMiddleware',
-    'django.contrib.sessions.middleware.SessionMiddleware',
-    'django.middleware.common.CommonMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',
-    'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'django.contrib.messages.middleware.MessageMiddleware',
-    'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'preview.middleware.PreviewAccessMiddleware'
+    "django.middleware.security.SecurityMiddleware",
+    "django.contrib.sessions.middleware.SessionMiddleware",
+    "django.middleware.common.CommonMiddleware",
+    "django.middleware.csrf.CsrfViewMiddleware",
+    "django.contrib.auth.middleware.AuthenticationMiddleware",
+    "django.contrib.messages.middleware.MessageMiddleware",
+    "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "preview.middleware.PreviewAccessMiddleware",
 ]
 
-ROOT_URLCONF = 'spht_project.urls'
+ROOT_URLCONF = "spht_project.urls"
 
 TEMPLATES = [
     {
-        'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
-        'APP_DIRS': True,
-        'OPTIONS': {
-            'context_processors': [
-                'django.template.context_processors.debug',
-                'django.template.context_processors.request',
-                'django.contrib.auth.context_processors.auth',
-                'django.contrib.messages.context_processors.messages',
+        "BACKEND": "django.template.backends.django.DjangoTemplates",
+        "DIRS": [],
+        "APP_DIRS": True,
+        "OPTIONS": {
+            "context_processors": [
+                "django.template.context_processors.debug",
+                "django.template.context_processors.request",
+                "django.contrib.auth.context_processors.auth",
+                "django.contrib.messages.context_processors.messages",
             ],
         },
     },
 ]
 
-WSGI_APPLICATION = 'spht_project.wsgi.application'
+WSGI_APPLICATION = "spht_project.wsgi.application"
 
 
 # Database
 # https://docs.djangoproject.com/en/1.11/ref/settings/#databases
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': CONFIG.get('db_name', 'spht'),
-        'USER': CONFIG.get('db_user', 'spht'),
-        'PASSWORD': CONFIG.get('db_password'),
-        'HOST': CONFIG.get('db_host', '127.0.0.1')
+    "default": {
+        "ENGINE": "django.db.backends.postgresql",
+        "NAME": CONFIG.get("db_name", "spht"),
+        "USER": CONFIG.get("db_user", "spht"),
+        "PASSWORD": CONFIG.get("db_password"),
+        "HOST": CONFIG.get("db_host", "127.0.0.1"),
     }
 }
 
@@ -119,16 +120,16 @@ DATABASES = {
 
 AUTH_PASSWORD_VALIDATORS = [
     {
-        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
+        "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator",
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
+        "NAME": "django.contrib.auth.password_validation.MinimumLengthValidator",
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
+        "NAME": "django.contrib.auth.password_validation.CommonPasswordValidator",
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
+        "NAME": "django.contrib.auth.password_validation.NumericPasswordValidator",
     },
 ]
 
@@ -136,9 +137,9 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/1.11/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = "en-us"
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = "UTC"
 
 USE_I18N = True
 
@@ -150,64 +151,55 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.11/howto/static-files/
 
-STATIC_ROOT = CONFIG.get('static-root', '/var/www/static/')
-STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, 'javascript/build')
-]
-STATIC_URL = '/static/'
+STATIC_ROOT = CONFIG.get("static-root", "/var/www/static/")
+STATICFILES_DIRS = [os.path.join(BASE_DIR, "javascript/build")]
+STATIC_URL = "/static/"
 
-STATICFILES_DIRS = (
-    os.path.join(BASE_DIR, 'javascript/build'),
-)
+STATICFILES_DIRS = (os.path.join(BASE_DIR, "javascript/build"),)
 
-MEDIA_ROOT = CONFIG.get('media-root', os.path.join(BASE_DIR, 'media'))
-MEDIA_URL = CONFIG.get('media-url', '/media/')
+MEDIA_ROOT = CONFIG.get("media-root", os.path.join(BASE_DIR, "media"))
+MEDIA_URL = CONFIG.get("media-url", "/media/")
 
-NC_SERVICE_DATA_ROOT = CONFIG.get('data_root', 'data/ncdjango/services')
+NC_SERVICE_DATA_ROOT = CONFIG.get("data_root", "data/ncdjango/services")
 
 NC_INSTALLED_INTERFACES = (
-    'ncdjango.interfaces.data',
-    'ncdjango.interfaces.arcgis_extended',
-    'ncdjango.interfaces.arcgis',
-    'interfaces.tiles'
+    "ncdjango.interfaces.data",
+    "ncdjango.interfaces.arcgis_extended",
+    "ncdjango.interfaces.arcgis",
+    "interfaces.tiles",
 )
 
-NC_REGISTERED_JOBS = {
-    'create_report': {
-        'type': 'task',
-        'task': 'spht.jobs.ReportTask'
-    }
-}
+NC_REGISTERED_JOBS = {"create_report": {"type": "task", "task": "spht.jobs.ReportTask"}}
 
 WEBPACK_LOADER = {
-    'DEFAULT': {
-        'CACHE': not DEBUG,
-        'BUNDLE_DIR_NAME': 'webpack_bundles/', # must end with slash
-        'STATS_FILE': os.path.join(BASE_DIR, 'webpack-stats.json'),
-        'POLL_INTERVAL': 0.1,
-        'TIMEOUT': None,
-        'IGNORE': ['.+\.hot-update.js', '.+\.map']
+    "DEFAULT": {
+        "CACHE": not DEBUG,
+        "BUNDLE_DIR_NAME": "webpack_bundles/",  # must end with slash
+        "STATS_FILE": os.path.join(BASE_DIR, "webpack-stats.json"),
+        "POLL_INTERVAL": 0.1,
+        "TIMEOUT": None,
+        "IGNORE": [".+\.hot-update.js", ".+\.map"],
     }
 }
 
 if not DEBUG:
-    WEBPACK_LOADER['DEFAULT']['BUNDLE_DIR_NAME'] = '/'
+    WEBPACK_LOADER["DEFAULT"]["BUNDLE_DIR_NAME"] = "/"
 
 LOGGING = {
-    'version': 1,
-    'disable_existing_loggers': False,
-    'handlers': {
-        'console': {
-            'class': 'logging.StreamHandler',
+    "version": 1,
+    "disable_existing_loggers": False,
+    "handlers": {
+        "console": {
+            "class": "logging.StreamHandler",
         },
     },
-    'loggers': {
-        '': {
-            'handlers': ['console'],
-            'level': 'WARNING',
+    "loggers": {
+        "": {
+            "handlers": ["console"],
+            "level": "WARNING",
         },
     },
 }
 
 CELERY_TRACK_TASK_STARTED = True
-CELERY_RESULT_BACKEND = 'django-db'
+CELERY_RESULT_BACKEND = "django-db"

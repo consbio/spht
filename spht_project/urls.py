@@ -13,6 +13,7 @@ Including another URLconf
     1. Import the include() function: from django.conf.urls import url, include
     2. Add a URL to urlpatterns:  url(r'^blog/', include('blog.urls'))
 """
+
 from django.conf import settings
 from django.urls import re_path, include
 from django.conf.urls.static import static
@@ -20,17 +21,23 @@ from django.contrib import admin
 from django.views.static import serve
 
 urlpatterns = [
-    re_path(r'^admin/', admin.site.urls),
-    re_path(r'^spht/', include('spht.urls')),
-    re_path(r'^', include('ncdjango.urls')),
+    re_path(r"^admin/", admin.site.urls),
+    re_path(r"^spht/", include("spht.urls")),
+    re_path(r"^", include("ncdjango.urls")),
 ]
 
 if settings.DEBUG:
+
     def serve_download(fn):
         def wrapped_serve(*args, **kwargs):
             response = fn(*args, **kwargs)
-            response['Content-disposition'] = 'attachment'
+            response["Content-disposition"] = "attachment"
             return response
+
         return wrapped_serve
 
-    urlpatterns += static(settings.MEDIA_URL, view=serve_download(serve), document_root=settings.MEDIA_ROOT)
+    urlpatterns += static(
+        settings.MEDIA_URL,
+        view=serve_download(serve),
+        document_root=settings.MEDIA_ROOT,
+    )
