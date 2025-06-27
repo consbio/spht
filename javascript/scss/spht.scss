@@ -1,11 +1,11 @@
-@import "~bulma/sass/utilities/initial-variables";
+@import '~bulma/sass/utilities/initial-variables';
 
 $primary: $blue;
 $sidebar-width: 440px;
 $header-height: 52px;
 $tab-header-height: calc(42px + 1.5rem);
 $tab-content-height: calc(100vh - #{$header-height} - #{$tab-header-height});
-$family-strong: "Arial Black", "Arial Bold", Gadget, sans-serif;
+$family-strong: 'Arial Black', 'Arial Bold', Gadget, sans-serif;
 
 @import '~bulma/bulma';
 @import '~leaflet/dist/leaflet.css';
@@ -16,11 +16,7 @@ $family-strong: "Arial Black", "Arial Bold", Gadget, sans-serif;
 @import '~leaflet-html-legend/dist/L.Control.HtmlLegend.css';
 
 @mixin ios-mobile-portrait {
-  @media only screen
-  and (min-device-width: 320px)
-  and (max-device-width: 480px)
-  and (-webkit-min-device-pixel-ration: 2)
-  and (orientation: portrait) {
+  @media only screen and (min-device-width: 320px) and (max-device-width: 480px) and (-webkit-min-device-pixel-ration: 2) and (orientation: portrait) {
     @content;
   }
 }
@@ -135,7 +131,7 @@ td {
 }
 
 em {
-  font-size: .9em;
+  font-size: 0.9em;
 }
 
 .badge {
@@ -152,7 +148,7 @@ em {
   margin: 10px 0px 0px 25px;
 }
 
-.configuration-step>h4 {
+.configuration-step > h4 {
   font-size: 1.25rem;
   font-weight: bold;
 }
@@ -175,7 +171,7 @@ em {
   left: 0;
   top: 0;
   z-index: 0;
-  opacity: 1.0;
+  opacity: 1;
 }
 
 .legend-square {

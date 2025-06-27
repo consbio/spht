@@ -6,9 +6,9 @@ import report from './report'
 import error from './error'
 
 export default combineReducers({
-    map,
-    configuration,
-    advanced,
-    report,
-    error
+  map,
+  configuration,
+  advanced,
+  report,
+  error,
 })

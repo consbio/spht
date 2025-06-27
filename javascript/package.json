@@ -34,6 +34,7 @@
     "file-loader": "^6.2.0",
     "mini-css-extract-plugin": "^2.9.2",
     "postcss-loader": "^8.1.1",
+    "prettier": "^3.6.1",
     "sass": "^1.69.7",
     "sass-loader": "^10.5.2",
     "style-loader": "^4.0.0",
@@ -45,7 +46,8 @@
   },
   "scripts": {
     "start": "webpack-dev-server --hot --config webpack.dev.babel.js",
-    "build": "webpack --config webpack.prod.babel.js --output-pathinfo"
+    "build": "webpack --config webpack.prod.babel.js --output-pathinfo",
+    "format": "prettier . --write"
   },
   "author": "",
   "license": "ISC"
