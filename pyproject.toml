@@ -10,7 +10,7 @@ readme = "README.md"
 requires-python = ">=3.10,<3.11"
 dependencies = [
     "django (>=5.2.3,<6.0.0)",
-    "ncdjango @ git+https://github.com/consbio/ncdjango.git",
+    "ncdjango (>=1.4.0,<2.0.0)",
     "django-webpack-loader (>=3.2.1,<4.0.0)",
     "psycopg2-binary (>=2.9.10,<3.0.0)",
     "mercantile (>=1.2.1,<2.0.0)",
@@ -21,7 +21,6 @@ dependencies = [
     "geopy (>=1.0,<1.1)",
     "trefoil @ git+https://github.com/consbio/trefoil.git@main",
     "setuptools (>=80.9.0,<81.0.0)",
-    "numpy (>=1.21.5,<1.22.0)",
     "pyproj (>=3.7.1,<4.0.0)",
 ]
 
