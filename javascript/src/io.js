@@ -1,4 +1,3 @@
-import fetch from 'isomorphic-fetch'
 import { getCookies } from './utils'
 
 export const urlEncode = (data) => {
