@@ -13,7 +13,7 @@ from PIL import Image
 from django.conf import settings
 from django.template.loader import render_to_string
 from django.utils.timezone import now
-from geopy.distance import vincenty
+from geopy.distance import geodesic
 from ncdjango.geoimage import world_to_image, GeoImage, image_to_world
 from ncdjango.geoprocessing.params import (
     StringParameter,
@@ -93,7 +93,7 @@ class ReportTask(NetCdfDatasetMixin, Task):
             tile_bounds = mercantile.xy_bounds(tile)
 
             if url.startswith("//"):
-                url = "http:" + url
+                url = "https:" + url
 
             async with client.get(
                 url.format(x=tile.x, y=tile.y, z=tile.z, s="server")
@@ -110,7 +110,7 @@ class ReportTask(NetCdfDatasetMixin, Task):
                 ]
                 await asyncio.wait(futures, return_when=asyncio.ALL_COMPLETED)
 
-        asyncio.get_event_loop().run_until_complete(fetch_tiles())
+        asyncio.run(fetch_tiles())
         return image
 
     def get_results_image(
@@ -246,7 +246,7 @@ class ReportTask(NetCdfDatasetMixin, Task):
 
         images_dir = self.get_images_dir()
         with open(os.path.join(images_dir, "scale.png"), "rb") as f:
-            scale_data = b64encode(f.read())
+            scale_data = b64encode(f.read()).decode()
 
         scale_bar_x = 38
         scale_bar_y = IMAGE_SIZE[1] - 15
@@ -258,12 +258,12 @@ class ReportTask(NetCdfDatasetMixin, Task):
             WEB_MERCATOR, WGS84, *to_world(scale_bar_x + 96, scale_bar_y)
         )
         scale = "{} mi".format(
-            round(vincenty(reversed(scale_bar_start), reversed(scale_bar_end)).miles, 1)
+            round(geodesic(reversed(scale_bar_start), reversed(scale_bar_end)).miles, 1)
         )
 
         context = {
             "today": now(),
-            "image_data": b64encode(image_data.getvalue()),
+            "image_data": b64encode(image_data.getvalue()).decode(),
             "east": format_x_coord(bounds[0]),
             "south": format_y_coord(bounds[1]),
             "west": format_x_coord(bounds[2]),
