@@ -1,104 +1,107 @@
+import os
 import shutil
+from pathlib import Path
 
-import os.path
-import pyproj
-from django.core.management.base import BaseCommand, CommandError
+from django.conf import settings
+from django.core.management import BaseCommand, CommandError
 from django.db import transaction
-from ncdjango.models import Service, Variable, SERVICE_DATA_ROOT
-from trefoil.geometry.bbox import BBox
+from ncdjango.models import Service, Variable
+from netCDF4 import Dataset
+from pyproj import Proj
 from trefoil.netcdf.describe import describe
+from trefoil.netcdf.variable import SpatialCoordinateVariables
 from trefoil.render.renderers.unique import UniqueValuesRenderer
 from trefoil.utilities.color import Color
 
+SERVICE_DIR = getattr(settings, "NC_SERVICE_DATA_ROOT", "data/ncdjango/services")
+
 
 class Command(BaseCommand):
-    help = "Publish an ncdjango service"
+    help = (
+        "Publish a NetCDF dataset as a map service (use `populate_climate_data` for publishing climate variable "
+        + "datasets)"
+    )
 
     def add_arguments(self, parser):
-        parser.add_argument("data_files", nargs="+", type=str)
+        parser.add_argument("datasets", nargs="+", type=str)
+        parser.add_argument("-d", "--directory", default=None, type=str)
         parser.add_argument("--overwrite", action="store_true", dest="overwrite")
 
-    def handle(self, data_files, overwrite, *args, **options):
-        with transaction.atomic():
-            for data_file in data_files:
-                if not os.path.isdir(SERVICE_DATA_ROOT):
-                    raise CommandError(
-                        "Directory %s does not exist." % SERVICE_DATA_ROOT
-                    )
+    def handle(self, datasets, directory, overwrite, *args, **options):
+        old_files = []
 
-                # Check for existence of file or service. There's a possible race
-                # condition here, but this is a management command, not a user command.
-                file_exists = False
-                svc_exists = False
+        for dataset in datasets:
+            filename = os.path.basename(dataset)
+            name = os.path.splitext(filename)[0]
 
-                target = os.path.join(SERVICE_DATA_ROOT, os.path.basename(data_file))
-                if os.path.exists(target):
-                    if not overwrite:
-                        self.stderr.write("File %s already exists.\n" % target)
-                    file_exists = True
+            if directory is not None:
+                filename = "{}/{}".format(directory.strip("/"), filename)
+                name = "{}/{}".format(directory.strip("/"), name)
 
-                svc_name = os.path.basename(data_file).split(".")[0]
-                if Service.objects.filter(name=svc_name).exists():
+            with transaction.atomic():
+                existing = Service.objects.filter(name__iexact=name)
+                if existing.exists():
                     if overwrite:
-                        Service.objects.filter(name=svc_name).delete()
+                        old_files.append(
+                            os.path.join(SERVICE_DIR, existing.get().data_path)
+                        )
+                        existing.delete()
                     else:
-                        self.stderr.write("Service %s already exists.\n" % svc_name)
-                        svc_exists = True
+                        raise CommandError(
+                            "A service named '{}' already exists".format(name)
+                        )
 
-                if (file_exists or svc_exists) and not overwrite:
-                    raise CommandError("No changes made.")
+                with Dataset(dataset, "r") as ds:
+                    variables = []
+                    x_dimension = None
+                    y_dimension = None
+                    projection = None
 
-                desc = describe(data_file)
-                grid = next(
-                    v["spatial_grid"]
-                    for k, v in desc["variables"].items()
-                    if v.get("spatial_grid")
-                )
-                extent = grid["extent"]
-                proj = extent["proj4"]
-                bbox = BBox(
-                    [extent[c] for c in ["xmin", "ymin", "xmax", "ymax"]],
-                    pyproj.Proj(proj),
-                )
-                renderer = UniqueValuesRenderer(
-                    [(1, Color(0, 0, 0, 255))], fill_value=0
-                )
+                    desc = describe(ds)
+                    for variable, variable_info in desc["variables"].items():
+                        if "spatial_grid" in variable_info:
+                            variables.append(variable)
+                            spatial_grid = variable_info["spatial_grid"]
+                            x_dimension = spatial_grid["x_dimension"]
+                            y_dimension = spatial_grid["y_dimension"]
+                            projection = Proj(variable_info["proj4"])
 
-                if file_exists:
-                    os.remove(
-                        os.path.join(SERVICE_DATA_ROOT, os.path.basename(data_file))
+                    if not variables:
+                        raise CommandError("No usable variables found")
+
+                    coords = SpatialCoordinateVariables.from_dataset(
+                        ds, x_dimension, y_dimension, projection=projection
                     )
-                shutil.copy(data_file, SERVICE_DATA_ROOT)
 
                 service = Service.objects.create(
-                    name=svc_name,
-                    projection=proj,
-                    full_extent=bbox,
-                    initial_extent=bbox,
-                    data_path=os.path.basename(data_file),
+                    name=name,
+                    data_path=filename,
+                    projection=coords.projection,
+                    full_extent=coords.bbox,
+                    initial_extent=coords.bbox,
                 )
-
-                for i, (variable_name, variable) in enumerate(
-                    desc["variables"].items()
-                ):
-                    grid = variable.get("spatial_grid")
-                    if grid is None:
-                        continue
-
-                    extent = grid["extent"]
-                    bbox = BBox(
-                        [extent[c] for c in ["xmin", "ymin", "xmax", "ymax"]],
-                        pyproj.Proj(extent["proj4"]),
-                    )
-
+                for variable in variables:
                     Variable.objects.create(
                         service=service,
-                        index=i,
-                        variable=variable_name,
-                        projection=proj,
-                        x_dimension=grid["x_dimension"],
-                        y_dimension=grid["y_dimension"],
-                        name=variable_name,
-                        renderer=renderer,
-                        full_extent=bbox,
+                        index=0,
+                        variable=variable,
+                        projection=projection,
+                        x_dimension=x_dimension,
+                        y_dimension=y_dimension,
+                        name=variable,
+                        renderer=UniqueValuesRenderer(
+                            [(1, Color(0, 0, 0, 255))], fill_value=0
+                        ),
+                        full_extent=coords.bbox,
                     )
+                print("Added {}...".format(name))
+
+        for path in old_files:
+            if os.path.exists(path):
+                os.remove(path)
+
+        for dataset in datasets:
+            target_dir = Path(SERVICE_DIR) / (directory or "")
+            if not os.path.exists(target_dir):
+                os.makedirs(target_dir)
+            shutil.copy(dataset, target_dir)
