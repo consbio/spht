@@ -4,7 +4,17 @@ import BundleTracker from 'webpack-bundle-tracker'
 
 export default {
   context: __dirname,
-  entry: ['babel-polyfill', './src/index', './scss/spht.scss'],
+  entry: [
+    'babel-polyfill',
+    './src/index',
+    './scss/spht.scss',
+    'leaflet/dist/leaflet.css',
+    'leaflet-basemaps/L.Control.Basemaps.css',
+    'leaflet-zoombox/L.Control.ZoomBox.css',
+    'leaflet-geonames/L.Control.Geonames.css',
+    'leaflet-range/L.Control.Range.css',
+    'leaflet-html-legend/dist/L.Control.HtmlLegend.css',
+  ],
   plugins: [
     new BundleTracker({
       path: path.resolve('../'),
@@ -24,7 +34,7 @@ export default {
         ],
       },
       {
-        test: /\.scss$/,
+        test: /\.s?css$/,
         use: [MiniCssExtractPlugin.loader, 'css-loader', 'sass-loader'],
       },
       {

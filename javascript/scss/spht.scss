@@ -1,19 +1,15 @@
-@import '~bulma/sass/utilities/initial-variables';
+@use 'bulma/sass/utilities/initial-variables';
 
-$primary: $blue;
+$primary: initial-variables.$blue;
 $sidebar-width: 440px;
 $header-height: 52px;
 $tab-header-height: calc(42px + 1.5rem);
 $tab-content-height: calc(100vh - #{$header-height} - #{$tab-header-height});
 $family-strong: 'Arial Black', 'Arial Bold', Gadget, sans-serif;
 
-@import '~bulma/bulma';
-@import '~leaflet/dist/leaflet.css';
-@import '~leaflet-basemaps/L.Control.Basemaps.css';
-@import '~leaflet-zoombox/L.Control.ZoomBox.css';
-@import '~leaflet-geonames/L.Control.Geonames.css';
-@import '~leaflet-range/L.Control.Range.css';
-@import '~leaflet-html-legend/dist/L.Control.HtmlLegend.css';
+@use 'bulma/bulma';
+@use 'bulma/sass/utilities/mixins';
+@use 'bulma/sass/components/tabs';
 
 @mixin ios-mobile-portrait {
   @media only screen and (min-device-width: 320px) and (max-device-width: 480px) and (-webkit-min-device-pixel-ration: 2) and (orientation: portrait) {
@@ -22,7 +18,7 @@ $family-strong: 'Arial Black', 'Arial Bold', Gadget, sans-serif;
 }
 
 // IE fixes
-@include tablet {
+@include mixins.tablet {
   .modal-card {
     margin: 0;
   }
@@ -37,7 +33,7 @@ $family-strong: 'Arial Black', 'Arial Bold', Gadget, sans-serif;
 
   .modal-card-body {
     max-height: calc(100vh - 146px - #{$header-height * 1.5});
-    background: $white;
+    background: initial-variables.$white;
     z-index: 10;
   }
 }
@@ -55,16 +51,12 @@ $family-strong: 'Arial Black', 'Arial Bold', Gadget, sans-serif;
   z-index: 5;
 }
 
-.navbar.is-dark a:hover {
-  color: $orange;
-}
-
 .sidebar {
   box-shadow: 2px 0px 10px;
   z-index: 2; // Raise box shadow above leaflet map
 }
 
-@include mobile {
+@include mixins.mobile {
   .sidebar {
     width: 100%;
     position: absolute;
@@ -77,7 +69,7 @@ $family-strong: 'Arial Black', 'Arial Bold', Gadget, sans-serif;
   width: $sidebar-width;
 }
 
-@include mobile {
+@include mixins.mobile {
   .sidebar-inner {
     width: 100%;
   }
@@ -90,7 +82,7 @@ $family-strong: 'Arial Black', 'Arial Bold', Gadget, sans-serif;
   padding: 0 1.5em;
 }
 
-@include mobile {
+@include mixins.mobile {
   .sidebar .tab-content {
     margin-top: $tab-header-height;
     height: auto !important;
@@ -153,12 +145,12 @@ em {
   font-weight: bold;
 }
 
-@include tablet {
+@include mixins.tablet {
   .tabs.is-boxed li.is-active-tablet a {
-    color: $tabs-link-active-color;
-    background-color: $tabs-boxed-link-active-background-color;
-    border-color: $tabs-boxed-link-active-border-color;
-    border-bottom-color: $tabs-boxed-link-active-border-bottom-color !important;
+    color: tabs.$tabs-link-active-color;
+    background-color: tabs.$tabs-boxed-link-active-background-color;
+    border-color: tabs.$tabs-boxed-link-active-border-color;
+    border-bottom-color: tabs.$tabs-boxed-link-active-border-bottom-color !important;
   }
 }
 
