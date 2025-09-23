@@ -11,12 +11,13 @@ https://docs.djangoproject.com/en/1.11/ref/settings/
 """
 
 import os
-import json
 
 import random
 import string
 import datetime
 import pytz
+
+from spht_project.config import Config
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -25,11 +26,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.11/howto/deployment/checklist/
 
-CONFIG = {}
-config_file = os.environ.get("SPHT_CONF_FILE") or os.path.join(BASE_DIR, "config.json")
-if config_file and os.path.isfile(config_file):
-    with open(config_file) as f:
-        CONFIG = json.loads(f.read())
+CONFIG = Config.get_instance()
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = CONFIG.get(
