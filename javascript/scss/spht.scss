@@ -182,10 +182,25 @@ em {
 }
 
 .pageloader {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
   position: absolute !important;
-  top: 65px;
-  bottom: 77px;
+  top: 89px;
+  bottom: 105px;
+  width: 100%;
   background-color: $primary;
+
+  .loader {
+    @include mixins.loader;
+    margin-bottom: 10px;
+  }
+  .title {
+    font-size: 18px;
+    font-weight: bold;
+    color: white;
+  }
 }
 
 .error-debug-info {

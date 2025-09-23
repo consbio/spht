@@ -35,7 +35,11 @@ class ModalCard extends React.Component {
           <div className="modal-card-body">{children}</div>
           {onSubmit === null ? null : (
             <div className="modal-card-foot justify-right">
-              <button className="button" onClick={() => onClose()}>
+              <button
+                className="button"
+                style={{ marginRight: '20px' }}
+                onClick={() => onClose()}
+              >
                 {cancelLabel}
               </button>
               <button

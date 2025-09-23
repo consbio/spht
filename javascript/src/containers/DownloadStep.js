@@ -63,6 +63,7 @@ class DownloadStep extends Component {
         >
           {isFetching ? (
             <div className="pageloader is-active">
+              <div className="loader"></div>
               <span className="title">Creating report...</span>
             </div>
           ) : null}
