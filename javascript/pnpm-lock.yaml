@@ -33,8 +33,8 @@ importers:
         specifier: ^0.4.9
         version: 0.4.9
       leaflet-html-legend:
-        specifier: ^0.3.5
-        version: 0.3.5(leaflet@1.9.4)
+        specifier: 0.3.3
+        version: 0.3.3(leaflet@1.9.4)
       leaflet-range:
         specifier: ^0.1.6
         version: 0.1.6
@@ -1941,10 +1941,10 @@ packages:
   leaflet-geonames@0.4.9:
     resolution: {integrity: sha512-iWluuA3b+aAfcBXSPYP6HYDnSuCwfCmevVQb6+3VfbclHAFB6IL7/2g5KzYxs1dSAm0xj1q7UkLKaPb0jxcI8g==}
 
-  leaflet-html-legend@0.3.5:
-    resolution: {integrity: sha512-jYcyug00Ky9HwZhWpy/HFC8nOXXTLuWcQqyBL1YX5qmnMyBctcPUYx+U6STHgP8vcejx6N0C3TrV3JAEgfrYlw==}
+  leaflet-html-legend@0.3.3:
+    resolution: {integrity: sha512-D9bZ5CNdfUn7/yhktZtxlfDpELBjYXIlBlSvuT0/UU6ExQsSTeeUO/jycgaYgd7mxO/TDvAwBH8R0vHaxSp73A==}
     peerDependencies:
-      leaflet: ^1.6.0
+      leaflet: ^1.3.*
 
   leaflet-range@0.1.6:
     resolution: {integrity: sha512-2JILAfwlsLpFAUE1DqoLuFrFpM3EgEJbIf7rYk2vbuCREsifvhFJoSrKKQtSZhpVYHDnIgudGDpciMDWfrbjJQ==}
@@ -5113,7 +5113,7 @@ snapshots:
 
   leaflet-geonames@0.4.9: {}
 
-  leaflet-html-legend@0.3.5(leaflet@1.9.4):
+  leaflet-html-legend@0.3.3(leaflet@1.9.4):
     dependencies:
       leaflet: 1.9.4
 

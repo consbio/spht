@@ -13,7 +13,7 @@
     "leaflet": "1.9.4",
     "leaflet-basemaps": "^0.3.4",
     "leaflet-geonames": "^0.4.9",
-    "leaflet-html-legend": "^0.3.5",
+    "leaflet-html-legend": "0.3.3",
     "leaflet-range": "^0.1.6",
     "leaflet-zoombox": "^0.5.2",
     "lethargy": "^1.0.9",
