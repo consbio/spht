@@ -13,4 +13,4 @@ hooks:
       runas: spht
   AfterInstall:
     - location: CodeDeploy/AfterInstall.sh
-      runas: spht
+      runas: root
