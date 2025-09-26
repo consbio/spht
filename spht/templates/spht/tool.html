@@ -10,9 +10,6 @@
 <body>
     {% csrf_token %}
     <div id="app"></div>
-    {% if not debug %}
-        {% render_bundle 'vendor' 'js' %}
-    {% endif %}
     {% render_bundle 'main' 'js' %}
 </body>
 </html>
