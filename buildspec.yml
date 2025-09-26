@@ -3,10 +3,12 @@ version: 0.2
 phases:
   install:
     commands:
-      - (cd javascript && npm install)
+      - curl -fsSL https://get.pnpm.io/install.sh | sh -
+      - source ~/.bashrc
+      - (cd javascript && pnpm install)
   build:
     commands:
-      - (cd javascript && npm run-script build)
+      - (cd javascript && pnpm build)
 
 artifacts:
   files: "**/*"

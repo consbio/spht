@@ -2,14 +2,15 @@ version: 0.0
 os: linux
 files:
   - source: .
-    destination: /home/spht/apps/spht
+    destination: /home/spht/build
 permissions:
   - object: .
     owner: spht
     group: spht
 hooks:
-  AfterInstall:
-    - location: codedeploy/after_install_spht.sh
+  BeforeInstall:
+    - location: CodeDeploy/BeforeInstall.sh
       runas: spht
-    - location: codedeploy/after_install_root.sh
-      runas: root
+  AfterInstall:
+    - location: CodeDeploy/AfterInstall.sh
+      runas: spht
