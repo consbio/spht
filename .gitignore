@@ -12,3 +12,5 @@ webpack-stats\.json
 config.json
 data/
 media/
+
+ansible/inventory.yml

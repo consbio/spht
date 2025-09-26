@@ -1,0 +1,30 @@
+---
+- name: Deploy Data
+  hosts: webservers
+  environment:
+    PATH: '/home/spht/.local/bin:/usr/local/bin:{{ lookup("env", "PATH") }}'
+    LD_LIBRARY_PATH: '/usr/local/lib:/usr/local/lib64'
+    AWS_SECRETS_KEY: spht-production
+  tasks:
+    - name: Synchronize NetCDF datasets
+      become: true
+      become_user: spht
+      ansible.posix.synchronize:
+        src: '{{ data_dir }}'
+        dest: /home/spht/data/netcdf/
+        recursive: true
+        delete: true
+        rsync_opts:
+          - '--include */'
+          - "--include '*.nc'"
+          - '--exclude *'
+    - name: Publish NetCDF datasets
+      become: true
+      become_user: spht
+      ansible.builtin.shell: |
+        poetry env use python3.11 && \
+        poetry run python manage.py publish /home/spht/data/netcdf/*.nc --overwrite
+      args:
+        chdir: /home/spht/apps/spht
+
+

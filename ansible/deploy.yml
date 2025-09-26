@@ -1,0 +1,19 @@
+---
+- name: Deploy code
+  hosts: webservers
+  tasks:
+    - name: Synchronize code with server
+      become: true
+      become_user: spht
+      ansible.posix.synchronize:
+        src: ../../
+        dest: /home/spht/apps/spht/
+        recursive: true
+        delete: true
+        rsync_opts:
+          - "--filter='+ javascript/build/'"
+          - "--filter='+ javascript/lib/'"
+          - "--filter='+ webpack-stats.json'"
+          - "--filter=':- .gitignore'"
+          - '--exclude=.git'
+          - '--exclude=.idea'
