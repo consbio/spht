@@ -192,6 +192,11 @@ class ReportTask(NetCdfDatasetMixin, Task):
             )
 
         image = renderer.render_image(data.data).convert("RGBA")
+
+        #  If y values are increasing, the rendered image needs to be flipped vertically
+        if self.is_y_increasing(variable):
+            image = image.transpose(Image.FLIP_TOP_BOTTOM)
+
         return GeoImage(image, native_extent).warp(extent, size).image
 
     def execute(
