@@ -19,7 +19,7 @@ class DistributionStep extends Component {
               onChange={(e) => this.props.setDistribution(e.target.value)}
             >
               <option value="1961_1990">1961 - 1990</option>
-              <option value="1981_2010">1981 - 2010</option>
+              <option value="1991_2020">1991 - 2020</option>
             </select>
           </div>
           <div>&nbsp;</div>

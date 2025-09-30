@@ -25,8 +25,8 @@ class ModelConditionsStep extends Component {
             You can select one or more future time ranges (it will overlay all
             selections on a single map) as well as the modeling conditions to
             predict future regions that will have climactic conditions similar
-            to the distribution you have selected. RCP 4.5 is a more
-            conservative estimate of future CO2 levels than RCP 8.5.
+            to the distribution you have selected. SSP370 is a more conservative
+            estimate of future CO2 levels than SSP585
           </ReactTooltip>
           <em>Select a future time range and a model</em>
           <div>&nbsp;</div>
@@ -34,25 +34,25 @@ class ModelConditionsStep extends Component {
             <tbody>
               <tr>
                 <td></td>
-                <td>RCP 4.5</td>
-                <td>RCP 8.5</td>
+                <td>SSP370</td>
+                <td>SSP585</td>
               </tr>
               <tr>
                 <td>2011 - 2040</td>
                 <td>
                   <input
                     onChange={(e) => onChange(e.target.value)}
-                    value="rcp45_2025"
+                    value="ssp370_2011_2040"
                     type="checkbox"
-                    checked={model.rcp45_2025}
+                    checked={model.ssp370_2011_2040}
                   />
                 </td>
                 <td>
                   <input
                     onChange={(e) => onChange(e.target.value)}
-                    value="rcp85_2025"
+                    value="ssp585_2011_2040"
                     type="checkbox"
-                    checked={model.rcp85_2025}
+                    checked={model.ssp585_2011_2040}
                   />
                 </td>
               </tr>
@@ -61,17 +61,17 @@ class ModelConditionsStep extends Component {
                 <td>
                   <input
                     onChange={(e) => onChange(e.target.value)}
-                    value="rcp45_2055"
+                    value="ssp370_2041_2070"
                     type="checkbox"
-                    checked={model.rcp45_2055}
+                    checked={model.ssp370_2041_2070}
                   />
                 </td>
                 <td>
                   <input
                     onChange={(e) => onChange(e.target.value)}
-                    value="rcp85_2055"
+                    value="ssp585_2041_2070"
                     type="checkbox"
-                    checked={model.rcp85_2055}
+                    checked={model.ssp585_2041_2070}
                   />
                 </td>
               </tr>
@@ -80,17 +80,17 @@ class ModelConditionsStep extends Component {
                 <td>
                   <input
                     onChange={(e) => onChange(e.target.value)}
-                    value="rcp45_2085"
+                    value="ssp370_2071_2100"
                     type="checkbox"
-                    checked={model.rcp45_2085}
+                    checked={model.ssp370_2071_2100}
                   />
                 </td>
                 <td>
                   <input
                     onChange={(e) => onChange(e.target.value)}
-                    value="rcp85_2085"
+                    value="ssp585_2071_2100"
                     type="checkbox"
-                    checked={model.rcp85_2085}
+                    checked={model.ssp585_2071_2100}
                   />
                 </td>
               </tr>

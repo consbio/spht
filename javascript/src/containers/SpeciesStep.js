@@ -24,11 +24,12 @@ class SpeciesStep extends Component {
               }}
             >
               <option value="none">Select</option>
-              <option value="pico">Lodgepole pine</option>
-              <option value="psme">Douglas-fir</option>
-              <option value="pisi">Sitka spruce</option>
-              <option value="pipo">Ponderosa pine</option>
-              <option value="pien">Engelmann spruce</option>
+              <option value="pinucon">Lodgepole pine</option>
+              <option value="pseumen">Douglas-fir</option>
+              <option value="picesit">Sitka spruce</option>
+              {/*TODO: Disabled until data are available*/}
+              {/*<option value="pinupon">Ponderosa pine</option>*/}
+              <option value="piceeng">Engelmann spruce</option>
               <option value="lariocc">Western larch</option>
               <option value="pinumon">Western white pine</option>
             </select>

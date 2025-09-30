@@ -6,10 +6,17 @@ export const getLayerURLs = (species, distribution, model) => {
     return []
   }
 
-  return [`/tiles/${species}_p${distribution}_800m_pa`].concat(
+  const cropDistance = species === 'pinupon' ? '50' : '500'
+
+  return [
+    `/tiles/${species}_cna_v750_normal_${distribution}_10x_crop_${cropDistance}`,
+  ].concat(
     Object.keys(model)
       .filter((item) => model[item])
-      .map((item) => `/tiles/${species}_15gcm_${item}_pa`)
+      .map(
+        (item) =>
+          `/tiles/${species}_cna_v750_8gcms_${item}_10x_crop_${cropDistance}`
+      )
   )
 }
 
