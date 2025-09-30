@@ -214,7 +214,9 @@ class ReportTask(NetCdfDatasetMixin, Task):
                 variable = self.service.variable_set.all().first()
                 future_grids.append(
                     self.get_grid_for_variable(
-                        variable, x_slice=x_slice, y_slice=y_slice
+                        variable,
+                        x_slice=(grid_bounds[0], grid_bounds[2]),
+                        y_slice=(grid_bounds[1], grid_bounds[3]),
                     )
                 )
                 self.close_dataset()
