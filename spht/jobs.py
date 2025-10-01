@@ -45,6 +45,7 @@ SPECIES_LABELS = {
     "piceeng": "Engelmann Spruce",
     "lariocc": "Western larch",
     "pinumon": "Western white pine",
+    "tsughet": "Western hemlock",
 }
 
 
