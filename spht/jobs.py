@@ -38,18 +38,14 @@ WEB_MERCATOR = Proj(
 IMAGE_SIZE = (645, 430)
 
 SPECIES_LABELS = {
-    "pico": "Lodgepole Pine",
-    "pisi": "Sitka Spruce",
-    "psme": "Douglas-fir",
-    "pipo": "Ponderosa Pine",
-    "pien": "Engelmann Spruce",
+    "pinucon": "Lodgepole Pine",
+    "picesit": "Sitka Spruce",
+    "pseumen": "Douglas-fir",
+    "pinupon": "Ponderosa Pine",
+    "piceeng": "Engelmann Spruce",
     "lariocc": "Western larch",
     "pinumon": "Western white pine",
 }
-
-RCP_LABELS = {"rcp45": "RCP 4.5", "rcp85": "RCP 8.5"}
-
-YEAR_LABELS = {"2025": "2011 - 2040", "2055": "2041 - 2070", "2085": "2071 - 2100"}
 
 
 class ReportTask(NetCdfDatasetMixin, Task):
@@ -127,8 +123,12 @@ class ReportTask(NetCdfDatasetMixin, Task):
         gained_colors = self.get_colors(gained_colors, len(futures) + 1)
 
         extent = BBox(bounds, projection=WGS84)
+        crop_distance = "50" if species == "pinupon" else "500"
+
         self.service = Service.objects.get(
-            name="{}_p{}_800m_pa".format(species, historic)
+            name="{}_cna_v750_normal_{}_10x_crop_{}".format(
+                species, historic, crop_distance
+            )
         )
         variable = self.service.variable_set.all().first()
         native_extent = extent.project(Proj(str(variable.projection)))
@@ -209,7 +209,9 @@ class ReportTask(NetCdfDatasetMixin, Task):
             future_grids = []
             for future in futures:
                 self.service = Service.objects.get(
-                    name="{}_15gcm_{}_pa".format(species, future)
+                    name="{}_cna_v750_8gcms_{}_10x_crop_{}".format(
+                        species, future, crop_distance
+                    )
                 )
                 variable = self.service.variable_set.all().first()
                 future_grids.append(
@@ -341,7 +343,7 @@ class ReportTask(NetCdfDatasetMixin, Task):
             "gained_colors": self.get_colors(gained_colors, len(futures) + 1),
             "historic": historic.replace("_", "-"),
             "futures": [
-                {"rcp": RCP_LABELS[rcp], "year": YEAR_LABELS[year]}
+                {"rcp": rcp.upper(), "year": year.replace("_", " - ")}
                 for rcp, year in [x.split("_", 1) for x in futures]
             ],
             "species": SPECIES_LABELS[species],
