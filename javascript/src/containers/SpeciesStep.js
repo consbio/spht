@@ -27,8 +27,7 @@ class SpeciesStep extends Component {
               <option value="pinucon">Lodgepole pine</option>
               <option value="pseumen">Douglas-fir</option>
               <option value="picesit">Sitka spruce</option>
-              {/*TODO: Disabled until data are available*/}
-              {/*<option value="pinupon">Ponderosa pine</option>*/}
+              <option value="pinupon">Ponderosa pine</option>
               <option value="piceeng">Engelmann spruce</option>
               <option value="lariocc">Western larch</option>
               <option value="pinumon">Western white pine</option>
