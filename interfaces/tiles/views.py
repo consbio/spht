@@ -8,6 +8,11 @@ from pyproj import Proj
 TILE_SIZE = (256, 256)
 TRANSPARENT_BACKGROUND_COLOR = Color(255, 255, 255, 0)
 
+WGS84 = Proj("+proj=longlat +datum=WGS84 +no_defs +type=crs")
+WEB_MERCATOR = Proj(
+    "+proj=merc +a=6378137 +b=6378137 +lat_ts=0 +lon_0=0 +x_0=0 +y_0=0 +k=1 +units=m +nadgrids=@null +wktext +no_defs +type=crs"
+)
+
 
 class GetImageView(GetImageViewBase):
     def get_service_name(self, request, *args, **kwargs):
@@ -21,12 +26,8 @@ class GetImageView(GetImageViewBase):
         )
         extent = BBox(
             tile_bounds,
-            projection=Proj("+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs"),
-        ).project(
-            Proj(
-                "+proj=merc +lon_0=0 +k=1 +x_0=0 +y_0=0 +a=6378137 +b=6378137 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs"
-            )
-        )
+            projection=WGS84,
+        ).project(WEB_MERCATOR)
 
         base_config = ImageConfiguration(
             extent=extent,
