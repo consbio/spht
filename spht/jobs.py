@@ -31,9 +31,9 @@ from trefoil.utilities.color import Color
 from weasyprint import HTML
 
 TILE_SIZE = 256
-WGS84 = Proj("+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs")
+WGS84 = Proj("+proj=longlat +datum=WGS84 +no_defs +type=crs")
 WEB_MERCATOR = Proj(
-    "+proj=merc +lon_0=0 +k=1 +x_0=0 +y_0=0 +a=6378137 +b=6378137 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs"
+    "+proj=merc +a=6378137 +b=6378137 +lat_ts=0 +lon_0=0 +x_0=0 +y_0=0 +k=1 +units=m +nadgrids=@null +wktext +no_defs +type=crs"
 )
 IMAGE_SIZE = (645, 430)
 
@@ -226,7 +226,7 @@ class ReportTask(NetCdfDatasetMixin, Task):
             future_data = sum(future_grids)
             del future_grids
 
-            data = numpy.zeros_like(historic_data, numpy.uint8)
+            data = numpy.zeros_like(historic_data, numpy.int8)
 
             data[historic_data == 1] = 1
             kept_idx = (historic_data == 1) & (future_data > 0)
@@ -234,7 +234,15 @@ class ReportTask(NetCdfDatasetMixin, Task):
             gained_idx = (historic_data == 0) & (future_data > 0)
             data[gained_idx] = future_data[gained_idx] + len(kept_colors) + 1
 
+            print(f"{numpy.unique(historic_data == 0)=}")
+            print(f"{numpy.unique(future_data > 0)=}")
+            print(f"{numpy.unique(future_data)=}")
+            print(f"{numpy.unique(future_data[gained_idx])=}")
+
             data[data.mask == 1] = 0
+
+            print(f"{data.min()=}")
+            print(f"{data.max()=}")
 
             values = numpy.unique(data)
             renderer = UniqueValuesRenderer(
@@ -250,6 +258,8 @@ class ReportTask(NetCdfDatasetMixin, Task):
                 ],
                 fill_value=0,
             )
+
+            print(f"{renderer.colormap=}")
 
         image = renderer.render_image(
             data.data, row_major_order=self.is_row_major(variable)

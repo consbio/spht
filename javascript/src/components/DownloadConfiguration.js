@@ -15,6 +15,18 @@ class DownloadConfiguration extends React.Component {
 
   refresh() {
     setTimeout(() => this.map.invalidateSize(), 1)
+
+    let { center, zoom, urls, colorScheme, opacity } = this.props
+
+    if (this.map) {
+      this.map.setView(center, zoom)
+    }
+
+    if (this.habitatLayer) {
+      this.habitatLayer.remove()
+      this.habitatLayer = new HabitatLayer(urls, colorScheme).addTo(this.map)
+      this.habitatLayer.setOpacity(opacity)
+    }
   }
 
   getConfiguration() {
