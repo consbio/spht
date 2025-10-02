@@ -28,8 +28,7 @@
       become_user: spht
       ansible.builtin.shell: |
         poetry env use python3.11 && \
-        poetry run python manage.py collectstatic --clear --no-input && \
-        poetry run python manage.py warm_tile_cache
+        poetry run python manage.py collectstatic --clear --no-input
       args:
         chdir: /home/spht/apps/spht
     - name: Reload gunicorn
