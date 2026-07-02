@@ -1,4 +1,4 @@
-onlyBuiltDependencies:
-  - '@parcel/watcher'
-  - core-js
-  - node-sass
+allowBuilds:
+  '@parcel/watcher': true
+  core-js: true
+  node-sass: true
