@@ -3,9 +3,8 @@ version: 0.2
 phases:
   install:
     commands:
-      - dnf update
-      - # -y isn't working, so the yes command is a brute-force tactic
-      - yes | dnf install -y libatomic
+      - dnf update -y
+      - dnf install -y libatomic
       - curl -fsSL https://get.pnpm.io/install.sh | sh -
       - source ~/.bashrc
       - (cd javascript && pnpm install)
