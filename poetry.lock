@@ -986,18 +986,18 @@ files = [
 
 [[package]]
 name = "djangorestframework"
-version = "3.17.2"
+version = "3.18.2"
 description = "Web APIs for Django, made easy."
 optional = false
 python-versions = ">=3.10"
 groups = ["main"]
 files = [
-    {file = "djangorestframework-3.17.2-py3-none-any.whl", hash = "sha256:cb0546a7415d5b46c04e0f4fe0a54b2109f4fdd5e83ca773c8c6183a6493d042"},
-    {file = "djangorestframework-3.17.2.tar.gz", hash = "sha256:89ed713b6dc83e1539f214b7d10808ae19bb8511004beba886225da6d5c9dafa"},
+    {file = "djangorestframework-3.18.2-py3-none-any.whl", hash = "sha256:a92d6a4e128a2550bd2fe2e02008a9e47fe52c180e130bb438f5ba70ee933a3f"},
+    {file = "djangorestframework-3.18.2.tar.gz", hash = "sha256:8249bad7715eb37274ce5820fc5d9fd786b7579806589565f52a71c02b35f54b"},
 ]
 
 [package.dependencies]
-django = ">=4.2"
+django = ">=5.2"
 
 [[package]]
 name = "fiona"
@@ -2848,4 +2848,4 @@ gdal = ["gdal"]
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.10,<3.12"
-content-hash = "40483d50a714772db46c799f564caf699ce99d69637298caa745694da0d25e86"
+content-hash = "0aa9329fc4f7a888309ce0994bddf2b79e642430388985bd30e275e993fa3301"
